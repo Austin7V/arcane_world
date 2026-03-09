@@ -1,108 +1,98 @@
 # Arcane World
 
-## Beschreibung
+## Description
 
-Arcane World ist ein einfaches Single-Player Fantasy Kartenspiel.  
-Der Spieler kämpft gegen Monster, verwendet Karten aus seinem Deck und erhält nach einem Sieg eine Belohnung, um das Deck Schritt für Schritt zu verbessern.
+Arcane World is a simple single-player fantasy card game.  
+The player fights monsters, uses cards from their deck, and after winning a battle receives a reward in order to gradually improve the deck.
 
 
 # Main Features (MVP)
 
 ## 1. Start Game
-Der Spieler kann ein neues Spiel starten.
+The player can start a new game.
 
 ## 2. Player Deck Setup
-Der Spieler erhält ein funktionierendes Startdeck.
+The player receives a functional starter deck.
 
 ## 3. Monster Generation
-Das Spiel erstellt ein Monster für den Kampf.
+The game generates a monster for the battle.
 
 ## 4. Battle Screen
-Der Spieler sieht den aktiven Kampf.
+The player can see the active battle.
 
 ## 5. Play Card
-Der Spieler kann eine Karte ausspielen.
+The player can play a card.
 
 ## 6. Monster Counter Attack
-Das Monster führt nach dem Spielerzug eine einfache Gegenaktion aus.
+After the player's turn, the monster performs a simple counter attack.
 
 ## 7. Battle Result
-Das Spiel erkennt Sieg oder Niederlage.
+The game detects victory or defeat.
 
 ## 8. Basic Run Goal
-Das Spiel erhält ein einfaches Ziel "Victory Screens" zu sehen.
+The game has a simple goal: the player can see a **Victory Screen**.
 
 
 # Additional Features Inspiration
 
 ## Reward After Victory
-Der Spieler erhält nach einem Sieg eine Belohnung.
-- Reward Screen nach einem gewonnenen Kampf
-- Anzeige einer neuen Karte als Belohnung
-- Hinzufügen dieser Karte zum Deck
-
+The player receives a reward after winning a battle.
+- Reward screen after a successful fight
+- Display of a new card as a reward
+- Adding the new card to the deck
 
 ## Next Battle Loop
-Nach der Belohnung beginnt der nächste Kampf.
-- Rückkehr in den Gameplay-Loop
-- Erstellung des nächsten Monsters
-- Start des nächsten Kampfes
+After receiving the reward, the next battle begins.
+- Return to the gameplay loop
+- Generation of the next monster
+- Start of the next battle
 
+## Decision Screen
+The player can later choose between two actions:
+- **Fight Monster**
+- **Take Quest**
 
-## Entscheidungsbildschirm
-Der Spieler kann später zwischen zwei Aktionen wählen:
-- **Monster bekämpfen**
-- **Quest annehmen**
-
-## Upgraid Run Goal
-Das Spiel erhält ein einfaches Ziel.
-- Zähler für besiegte Monster
-- Run endet nach einer festgelegten Anzahl besiegter Monster
+## Upgrade Run Goal
+The game can later include a more advanced run goal.
+- Counter for defeated monsters
+- The run ends after defeating a certain number of monsters
 
 ## Quest Event
-Der Spieler kann später Quest-Ereignisse erleben.
-Mögliche Inhalte:
-- kurzer Ereignistext
-- drei Auswahlmöglichkeiten
-- unterschiedliche Konsequenzen
+The player can later encounter quest events.
+Possible elements:
+- short event description
+- three choices
+- different consequences
 
 
-## Kartenauswahl als Belohnung
-Statt einer festen Belohnungskarte kann der Spieler später:
-- mehrere zufällige Karten sehen
-- eine davon auswählen
+## Card Selection Reward
+Instead of receiving a fixed reward card, the player can later:
+- see multiple random cards
+- choose one of them
 
+## More Characters
+Additional characters with unique abilities can be added later.
 
-## Mehr Charaktere
-Später können mehrere Charaktere mit eigenen Fähigkeiten hinzugefügt werden.
+## Advanced Card Mechanics
+Cards may later include additional effects, such as:
+- special abilities
+- status effects
+- card combinations
 
+## More Monster Types
+Different monsters with unique abilities can be added later.
 
-## Erweiterte Kartenmechanik
-Karten können später zusätzliche Effekte erhalten, z. B.:
-- Spezialfähigkeiten
-- Status-Effekte
-- Kombinationen
+## Save Game
+The current progress can later be saved and continued.
 
+## UI Improvements
+Future improvements may include:
+- animations
+- improved card visuals
+- improved battle layout
 
-## Mehr Monsterarten
-Später können unterschiedliche Monster mit eigenen Fähigkeiten hinzugefügt werden.
-
-
-## Spiel speichern
-Der aktuelle Fortschritt kann später gespeichert und fortgesetzt werden.
-
-
-## UI Verbesserungen
-Spätere Verbesserungen:
-
-- Animationen
-- bessere Kartenvisualisierung
-- besseres Kampflayout
-
-
-## Spielerstatistiken
-Spätere Statistikfunktionen:
-
-- Anzahl der Runs
-- Anzahl der Siege
-- Fortschritt
+## Player Statistics
+Future statistics features:
+- number of runs
+- number of victories
+- overall progress
