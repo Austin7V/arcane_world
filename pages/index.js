@@ -1,9 +1,19 @@
 import StartScreen from "../components/StartScreen";
+import { useState } from "react";
+import createInitialGameState from "../lib/createInitialGameState";
+import GameScreenPlaceholder from "@/components/GameScreenPlaceholder";
 
 export default function HomePage() {
+  const [gameState, setGameState] = useState(null);
+
   function handleStartGame() {
-    console.log("Start Game clicked");
+    const newGameState = createInitialGameState();
+    setGameState(newGameState);
   }
 
-  return <StartScreen onStartGame={handleStartGame} />;
+  if (!gameState) {
+    return <StartScreen onStartGame={handleStartGame} />;
+  }
+
+  return <GameScreenPlaceholder gameState={gameState} />;
 }
