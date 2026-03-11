@@ -5,6 +5,12 @@ export default function GameScreenPlaceholder({ gameState }) {
     <Wrapper>
       <Title>Game Started</Title>
       <Description>Current screen: {gameState.screen}</Description>
+      <Description>
+        Player cards loaded: {gameState.cardPools.playerCards.length}
+      </Description>
+      <Description>
+        Monster cards loaded: {gameState.cardPools.monsterCards.length}
+      </Description>
     </Wrapper>
   );
 }
