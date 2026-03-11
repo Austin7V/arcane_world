@@ -3,27 +3,24 @@ import styled from "styled-components";
 export default function MonsterDeck({ cards }) {
   return (
     <DeckWrapper>
-      {cards.map((card, index) => (
-        <MonsterCardBack key={`${card.id}-${index}`}>
-          Monster Card
-        </MonsterCardBack>
-      ))}
+      <DeckTitle>Monster Deck</DeckTitle>
+      <DeckCount>{cards.length} cards</DeckCount>
     </DeckWrapper>
   );
 }
 
 const DeckWrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 16px;
-`;
-
-const MonsterCardBack = styled.div`
-  min-width: 120px;
-  padding: 16px;
+  min-width: 160px;
+  padding: 20px;
   border: 1px solid white;
   border-radius: 12px;
   text-align: center;
+`;
+
+const DeckTitle = styled.h3`
+  margin: 0 0 8px;
+`;
+
+const DeckCount = styled.p`
+  margin: 0;
 `;

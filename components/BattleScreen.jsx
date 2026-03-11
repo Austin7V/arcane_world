@@ -17,7 +17,6 @@ export default function BattleScreen({ gameState }) {
         <SectionTitle>Monster</SectionTitle>
         <InfoText>Name: {gameState.currentMonster.name}</InfoText>
         <InfoText>HP: {gameState.currentMonster.hp}</InfoText>
-        <InfoText>Cards: {gameState.currentMonster.deck.length}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
 
@@ -33,8 +32,6 @@ export default function BattleScreen({ gameState }) {
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
         <InfoText>HP: {gameState.player.hp}</InfoText>
-        <InfoText>Hand: {gameState.player.hand.length}</InfoText>
-        <InfoText>Deck: {gameState.player.deck.length}</InfoText>
         <PlayerDeck cards={gameState.player.deck} />
       </PlayerArea>
       <PlayerHand
