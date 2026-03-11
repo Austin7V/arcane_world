@@ -1,7 +1,7 @@
 import StartScreen from "../components/StartScreen";
 import { useState } from "react";
 import createInitialGameState from "../lib/createInitialGameState";
-import GameScreenPlaceholder from "@/components/GameScreenPlaceholder";
+import BattleScreen from "@/components/BattleScreen";
 
 export default function HomePage() {
   const [gameState, setGameState] = useState(null);
@@ -15,5 +15,5 @@ export default function HomePage() {
     return <StartScreen onStartGame={handleStartGame} />;
   }
 
-  return <GameScreenPlaceholder gameState={gameState} />;
+  return <BattleScreen gameState={gameState} />;
 }
