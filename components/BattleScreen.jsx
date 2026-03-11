@@ -36,6 +36,7 @@ export default function BattleScreen({ gameState }) {
       <PlayerHand
         cards={gameState.player.hand}
         onSelectCard={handleSelectCard}
+        selectedCard={selectedCard}
       />
     </Wrapper>
   );

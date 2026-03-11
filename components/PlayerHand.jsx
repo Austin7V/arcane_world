@@ -1,11 +1,16 @@
 import styled from "styled-components";
 import PlayerHandCard from "./PlayerHandCard";
 
-export default function PlayerHand({ cards, onSelectCard }) {
+export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
   return (
     <HandCards>
       {cards.map((card) => (
-        <PlayerHandCard key={card.id} card={card} onSelectCard={onSelectCard} />
+        <PlayerHandCard
+          key={card.id}
+          card={card}
+          onSelectCard={onSelectCard}
+          isSelected={selectedCard?.id === card.id}
+        />
       ))}
     </HandCards>
   );
