@@ -9,6 +9,8 @@ export default function GameScreenPlaceholder({ gameState }) {
       <Description>
         Starter deck cards: {gameState.player.deck.length}
       </Description>
+      <Description>Cards in hand: {gameState.player.hand.length}</Description>
+      <Description>Cards in deck: {gameState.player.deck.length}</Description>
       <Description>
         Player cards loaded: {gameState.cardPools.playerCards.length}
       </Description>
