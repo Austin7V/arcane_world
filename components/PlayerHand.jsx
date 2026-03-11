@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import PlayerHandCard from "./PlayerHandCard";
 
-export default function PlayerHand({ cards }) {
+export default function PlayerHand({ cards, onSelectCard }) {
   return (
     <HandCards>
       {cards.map((card) => (
-        <PlayerHandCard key={card.id} card={card} />
+        <PlayerHandCard key={card.id} card={card} onSelectCard={onSelectCard} />
       ))}
     </HandCards>
   );

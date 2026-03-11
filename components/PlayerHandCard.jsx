@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-export default function PlayerHandCard({ card }) {
+export default function PlayerHandCard({ card, onSelectCard }) {
   return (
-    <CardWrapper>
+    <CardWrapper onClick={() => onSelectCard(card)}>
       <CardTitle>{card.name}</CardTitle>
       <CardStat>Damage: {card.damage}</CardStat>
       <CardStat>Armor: {card.armor}</CardStat>

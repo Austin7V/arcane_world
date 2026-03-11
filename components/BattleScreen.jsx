@@ -1,8 +1,14 @@
 import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
-import PlayerHandCard from "./PlayerHandCard";
+import { useState } from "react";
 
 export default function BattleScreen({ gameState }) {
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  function handleSelectCard(card) {
+    setSelectedCard(card);
+  }
+
   return (
     <Wrapper>
       <MonsterArea>
@@ -15,6 +21,9 @@ export default function BattleScreen({ gameState }) {
       <BattleInfoArea>
         <SectionTitle>Battle Info</SectionTitle>
         <InfoText>The battle has started.</InfoText>
+        <InfoText>
+          Selected card: {selectedCard ? selectedCard.name : "None"}
+        </InfoText>
       </BattleInfoArea>
 
       <PlayerArea>
@@ -24,7 +33,10 @@ export default function BattleScreen({ gameState }) {
         <InfoText>Hand: {gameState.player.hand.length}</InfoText>
         <InfoText>Deck: {gameState.player.deck.length}</InfoText>
       </PlayerArea>
-      <PlayerHand cards={gameState.player.hand} />
+      <PlayerHand
+        cards={gameState.player.hand}
+        onSelectCard={handleSelectCard}
+      />
     </Wrapper>
   );
 }
