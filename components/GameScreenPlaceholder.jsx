@@ -5,6 +5,10 @@ export default function GameScreenPlaceholder({ gameState }) {
     <Wrapper>
       <Title>Game Started</Title>
       <Description>Current screen: {gameState.screen}</Description>
+      <Description>Player HP: {gameState.player.hp}</Description>
+      <Description>
+        Starter deck cards: {gameState.player.deck.length}
+      </Description>
       <Description>
         Player cards loaded: {gameState.cardPools.playerCards.length}
       </Description>
