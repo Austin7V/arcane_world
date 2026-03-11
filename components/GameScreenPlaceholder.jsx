@@ -14,6 +14,11 @@ export default function GameScreenPlaceholder({ gameState }) {
       <Description>
         Player cards loaded: {gameState.cardPools.playerCards.length}
       </Description>
+      <Description>Monster: {gameState.currentMonster.name}</Description>
+      <Description>Monster HP: {gameState.currentMonster.hp}</Description>
+      <Description>
+        Monster cards: {gameState.currentMonster.deck.length}
+      </Description>
       <Description>
         Monster cards loaded: {gameState.cardPools.monsterCards.length}
       </Description>
