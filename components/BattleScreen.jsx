@@ -22,6 +22,16 @@ export default function BattleScreen({ gameState }) {
         <InfoText>Hand: {gameState.player.hand.length}</InfoText>
         <InfoText>Deck: {gameState.player.deck.length}</InfoText>
       </PlayerArea>
+      <HandCards>
+        {gameState.player.hand.map((card) => (
+          <PlayerCard key={card.id}>
+            <CardTitle>{card.name}</CardTitle>
+            <CardStat>Damage: {card.damage}</CardStat>
+            <CardStat>Armor: {card.armor}</CardStat>
+            <CardStat>Draw: {card.draw}</CardStat>
+          </PlayerCard>
+        ))}
+      </HandCards>
     </Wrapper>
   );
 }
@@ -76,4 +86,29 @@ const SectionTitle = styled.h2`
 
 const InfoText = styled.p`
   margin: 0;
+`;
+
+const HandCards = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+const PlayerCard = styled.div`
+  min-width: 140px;
+  padding: 16px;
+  border: 1px solid white;
+  border-radius: 12px;
+  text-align: center;
+`;
+
+const CardTitle = styled.h3`
+  margin: 0 0 12px;
+  font-size: 18px;
+`;
+
+const CardStat = styled.p`
+  margin: 0 0 6px;
 `;
