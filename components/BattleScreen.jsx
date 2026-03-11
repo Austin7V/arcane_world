@@ -2,6 +2,7 @@ import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
 import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
+import PlayerDeck from "./PlayerDeck";
 
 export default function BattleScreen({ gameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -34,6 +35,7 @@ export default function BattleScreen({ gameState }) {
         <InfoText>HP: {gameState.player.hp}</InfoText>
         <InfoText>Hand: {gameState.player.hand.length}</InfoText>
         <InfoText>Deck: {gameState.player.deck.length}</InfoText>
+        <PlayerDeck cards={gameState.player.deck} />
       </PlayerArea>
       <PlayerHand
         cards={gameState.player.hand}
