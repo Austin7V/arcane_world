@@ -4,11 +4,31 @@ import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 
-export default function BattleScreen({ gameState }) {
+export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
+  }
+
+  function handlePlayerCard() {
+    if (!selectedCard) {
+      return;
+    }
+
+    const updatedHand = gameState.player.hand.filter(
+      (card) => card.id !== selectedCard.id
+    );
+
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        hand: updatedHand,
+      },
+    });
+
+    setSelectedCard(null);
   }
 
   return (
@@ -22,10 +42,12 @@ export default function BattleScreen({ gameState }) {
 
       <BattleInfoArea>
         <SectionTitle>Battle Info</SectionTitle>
-        <InfoText>The battle has started.</InfoText>
         <InfoText>
           Selected card: {selectedCard ? selectedCard.name : "None"}
         </InfoText>
+        <PlayButton onClick={handlePlayerCard} disabled={!selectedCard}>
+          Play Card
+        </PlayButton>
       </BattleInfoArea>
 
       <PlayerArea>
@@ -93,4 +115,16 @@ const SectionTitle = styled.h2`
 
 const InfoText = styled.p`
   margin: 0;
+`;
+
+const PlayButton = styled.button`
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 `;

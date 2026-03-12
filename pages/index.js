@@ -15,5 +15,5 @@ export default function HomePage() {
     return <StartScreen onStartGame={handleStartGame} />;
   }
 
-  return <BattleScreen gameState={gameState} />;
+  return <BattleScreen gameState={gameState} setGameState={setGameState} />;
 }
