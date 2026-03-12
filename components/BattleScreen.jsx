@@ -20,11 +20,17 @@ export default function BattleScreen({ gameState, setGameState }) {
       (card) => card.id !== selectedCard.id
     );
 
+    const updatedPlayerArmor = Math.min(
+      4,
+      gameState.player.armor + selectedCard.armor
+    );
+
     setGameState({
       ...gameState,
       player: {
         ...gameState.player,
         hand: updatedHand,
+        armor: updatedPlayerArmor,
       },
     });
 
