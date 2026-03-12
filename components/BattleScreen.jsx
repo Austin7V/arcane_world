@@ -25,12 +25,23 @@ export default function BattleScreen({ gameState, setGameState }) {
       gameState.player.armor + selectedCard.armor
     );
 
+    const updatedMonsterDeck = gameState.currentMonster.deck.slice(
+      selectedCard.damage
+    );
+
+    const updatedMonsterHp = updatedMonsterDeck.length;
+
     setGameState({
       ...gameState,
       player: {
         ...gameState.player,
         hand: updatedHand,
         armor: updatedPlayerArmor,
+      },
+      currentMonster: {
+        ...gameState.currentMonster,
+        deck: updatedMonsterDeck,
+        hp: updatedMonsterHp,
       },
     });
 
