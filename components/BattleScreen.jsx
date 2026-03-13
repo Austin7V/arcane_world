@@ -7,6 +7,9 @@ import PlayerDeck from "./PlayerDeck";
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
 
+  const playerHP = gameState.player.deck.length + gameState.player.hand.length;
+  const monsterHP = gameState.currentMonster.deck.length;
+
   function handleSelectCard(card) {
     setSelectedCard(card);
   }
@@ -53,7 +56,7 @@ export default function BattleScreen({ gameState, setGameState }) {
       <MonsterArea>
         <SectionTitle>Monster</SectionTitle>
         <InfoText>Name: {gameState.currentMonster.name}</InfoText>
-        <InfoText>HP: {gameState.currentMonster.hp}</InfoText>
+        <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
 
@@ -70,7 +73,7 @@ export default function BattleScreen({ gameState, setGameState }) {
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
-        <InfoText>HP: {gameState.player.hp}</InfoText>
+        <InfoText>HP: {playerHP}</InfoText>
         <InfoText>Armor: {gameState.player.armor}</InfoText>
         <PlayerDeck cards={gameState.player.deck} />
       </PlayerArea>
