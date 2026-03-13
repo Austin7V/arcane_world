@@ -34,12 +34,15 @@ export default function BattleScreen({ gameState, setGameState }) {
 
     const updatedMonsterHp = updatedMonsterDeck.length;
 
+    const updatedPendingDraw = gameState.player.pendingDraw + selectedCard.draw;
+
     setGameState({
       ...gameState,
       player: {
         ...gameState.player,
         hand: updatedHand,
         armor: updatedPlayerArmor,
+        pendingDraw: updatedPendingDraw,
       },
       currentMonster: {
         ...gameState.currentMonster,
