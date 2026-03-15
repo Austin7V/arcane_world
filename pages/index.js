@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import StartScreen from "../components/StartScreen";
-import createInitialGameState from "../lib/createInitialGameState";
+import createInitialGameState from "../lib/game/createInitialGameState";
 import { useGame } from "../context/GameContext";
 
 export default function HomePage() {

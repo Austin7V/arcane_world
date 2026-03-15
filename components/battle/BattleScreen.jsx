@@ -5,8 +5,8 @@ import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
 import BattleInfoPanel from "./BattleInfoPanel";
-import resolvePlayerCardPlay from "@/lib/resolvePlayerCardPlay";
-import resolveMonsterTurn from "@/lib/resolveMonsterTurn";
+import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
+import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
