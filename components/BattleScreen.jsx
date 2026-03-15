@@ -53,21 +53,11 @@ export default function BattleScreen({ gameState, setGameState }) {
     setSelectedCard(null);
   }
 
-  function handleResolveDraw() {
-    const updatedPlayer = drawCardsToHand(gameState.player);
+  function handleEndTurn() {
+    if (gameState.currentTurn !== "player") {
+      return;
+    }
 
-    setGameState({
-      ...gameState,
-      player: {
-        ...gameState.player,
-        hand: updatedPlayer.hand,
-        deck: updatedPlayer.deck,
-        pendingDraw: updatedPlayer.pendingDraw,
-      },
-    });
-  }
-
-  function handleMonsterTurn() {
     if (gameState.currentMonster.deck.length === 0) {
       return;
     }
@@ -79,17 +69,28 @@ export default function BattleScreen({ gameState, setGameState }) {
     const randomMonsterCard = gameState.currentMonster.deck[randomIndex];
     const strikeDamage = randomMonsterCard.actions.strike.damage;
 
-    const updatedPlayer = applyMonsterStrike(gameState.player, strikeDamage);
+    const updatedPlayerAfterStrike = applyMonsterStrike(
+      gameState.player,
+      strikeDamage
+    );
+
+    const updatedPlayerAfterDraw = drawCardsToHand({
+      ...updatedPlayerAfterStrike,
+      pendingDraw: gameState.player.pendingDraw,
+    });
 
     setGameState({
       ...gameState,
+      currentTurn: "player",
       player: {
         ...gameState.player,
-        armor: updatedPlayer.armor,
-        deck: updatedPlayer.deck,
-        hand: updatedPlayer.hand,
+        armor: updatedPlayerAfterDraw.armor,
+        hand: updatedPlayerAfterDraw.hand,
+        deck: updatedPlayerAfterDraw.deck,
+        pendingDraw: updatedPlayerAfterDraw.pendingDraw,
       },
     });
+    setSelectedCard(null);
   }
 
   return (
@@ -106,11 +107,19 @@ export default function BattleScreen({ gameState, setGameState }) {
         <InfoText>
           Selected card: {selectedCard ? selectedCard.name : "None"}
         </InfoText>
-        <PlayButton onClick={handlePlayerCard} disabled={!selectedCard}>
+        <InfoText>Current turn: {gameState.currentTurn}</InfoText>
+        <PlayButton
+          onClick={handlePlayerCard}
+          disabled={!selectedCard || gameState.currentTurn !== "player"}
+        >
           Play Card
         </PlayButton>
-        <PlayButton onClick={handleResolveDraw}>Resolve Draw</PlayButton>
-        <PlayButton onClick={handleMonsterTurn}>Monster Turn</PlayButton>
+        <PlayButton
+          onClick={handleEndTurn}
+          disabled={gameState.currentTurn !== "player"}
+        >
+          End Turn
+        </PlayButton>
       </BattleInfoArea>
 
       <PlayerArea>
