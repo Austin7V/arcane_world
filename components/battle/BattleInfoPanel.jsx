@@ -4,6 +4,7 @@ export default function BattleInfoPanel({
   selectedCard,
   currentTurn,
   pendingMonsterEffect,
+  battleResult,
   onPlayCard,
   onEndTurn,
   isPlayCardDisabled,
@@ -18,6 +19,9 @@ export default function BattleInfoPanel({
       </InfoText>
 
       <InfoText>Current turn: {currentTurn}</InfoText>
+      <InfoText>
+        Battle result: {battleResult ? battleResult : "In progress"}
+      </InfoText>
 
       <InfoText>
         Active monster effect:{" "}

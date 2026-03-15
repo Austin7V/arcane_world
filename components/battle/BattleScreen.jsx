@@ -7,6 +7,8 @@ import BattleLog from "./BattleLog";
 import BattleInfoPanel from "./BattleInfoPanel";
 import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
+import getBattleResult from "@/lib/game/getBattleResult";
+import BattleResultOverlay from "./BattleResultOverlay";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -18,12 +20,17 @@ export default function BattleScreen({ gameState, setGameState }) {
 
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
+  const battleResult = getBattleResult(gameState);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
   }
 
   function handlePlayerCard() {
+    if (battleResult) {
+      return;
+    }
+
     const result = resolvePlayerCardPlay(gameState, selectedCard);
 
     if (!result) {
@@ -36,6 +43,10 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   function handleEndTurn() {
+    if (battleResult) {
+      return;
+    }
+
     const result = resolveMonsterTurn(gameState);
 
     if (!result) {
@@ -61,12 +72,17 @@ export default function BattleScreen({ gameState, setGameState }) {
           selectedCard={selectedCard}
           currentTurn={gameState.currentTurn}
           pendingMonsterEffect={gameState.pendingMonsterEffect}
+          battleResult={battleResult}
           onPlayCard={handlePlayerCard}
           onEndTurn={handleEndTurn}
           isPlayCardDisabled={
-            !selectedCard || gameState.currentTurn !== "player"
+            !selectedCard ||
+            gameState.currentTurn !== "player" ||
+            battleResult !== null
           }
-          isEndTurnDisabled={gameState.currentTurn !== "player"}
+          isEndTurnDisabled={
+            gameState.currentTurn !== "player" || battleResult !== null
+          }
         />
       </CenterArea>
       <PlayerArea>
@@ -81,6 +97,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         onSelectCard={handleSelectCard}
         selectedCard={selectedCard}
       />
+      <BattleResultOverlay battleResult={battleResult} />
     </Wrapper>
   );
 }
