@@ -77,6 +77,9 @@ export default function BattleScreen({ gameState, setGameState }) {
     );
 
     const randomMonsterCard = gameState.currentMonster.deck[randomIndex];
+    const updatedMonsterDeck = gameState.currentMonster.deck.filter(
+      (_, index) => index !== randomIndex
+    );
     const strikeDamage = randomMonsterCard.actions.strike.damage;
 
     const updatedPlayerAfterStrike = applyMonsterStrike(
@@ -98,6 +101,10 @@ export default function BattleScreen({ gameState, setGameState }) {
         hand: updatedPlayerAfterDraw.hand,
         deck: updatedPlayerAfterDraw.deck,
         pendingDraw: updatedPlayerAfterDraw.pendingDraw,
+      },
+      currentMonster: {
+        ...gameState.currentMonster,
+        deck: updatedMonsterDeck,
       },
     });
 
