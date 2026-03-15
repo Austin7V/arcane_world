@@ -27,6 +27,15 @@ export default function BattleScreen({ gameState, setGameState }) {
       return;
     }
 
+    let effectiveDamage = selectedCard.damage;
+
+    if (gameState.pendingMonsterEffect?.effect === "playerMaxDamageNextTurn") {
+      effectiveDamage = Math.min(
+        selectedCard.damage,
+        gameState.pendingMonsterEffect.value
+      );
+    }
+
     const updatedHand = gameState.player.hand.filter(
       (card) => card.id !== selectedCard.id
     );
@@ -36,14 +45,14 @@ export default function BattleScreen({ gameState, setGameState }) {
       gameState.player.armor + selectedCard.armor
     );
 
-    const updatedMonsterDeck = gameState.currentMonster.deck.slice(
-      selectedCard.damage
-    );
+    const updatedMonsterDeck =
+      gameState.currentMonster.deck.slice(effectiveDamage);
 
     const updatedPendingDraw = gameState.player.pendingDraw + selectedCard.draw;
 
     setGameState({
       ...gameState,
+      pendingMonsterEffect: null,
       player: {
         ...gameState.player,
         hand: updatedHand,
@@ -57,7 +66,7 @@ export default function BattleScreen({ gameState, setGameState }) {
     });
 
     addBattleLogMessage(
-      `Player used ${selectedCard.name} (damage: ${selectedCard.damage}, armor: ${selectedCard.armor}, draw: ${selectedCard.draw})`
+      `Player used ${selectedCard.name} (damage: ${effectiveDamage}, armor: ${selectedCard.armor}, draw: ${selectedCard.draw})`
     );
 
     setSelectedCard(null);
