@@ -6,6 +6,7 @@ import PlayerDeck from "./PlayerDeck";
 import drawCardsToHand from "../lib/drawCardsToHand.js";
 import applyMonsterStrike from "@/lib/applyMonsterStrike";
 import BattleLog from "./BattleLog";
+import BattleInfoPanel from "./BattleInfoPanel";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -214,31 +215,17 @@ export default function BattleScreen({ gameState, setGameState }) {
       </MonsterArea>
       <CenterArea>
         <BattleLog messages={battleLogMessages} />
-        <BattleInfoArea>
-          <SectionTitle>Battle Info</SectionTitle>
-          <InfoText>
-            Selected card: {selectedCard ? selectedCard.name : "None"}
-          </InfoText>
-          <InfoText>Current turn: {gameState.currentTurn}</InfoText>
-          <InfoText>
-            Active monster effect:{" "}
-            {gameState.pendingMonsterEffect
-              ? `${gameState.pendingMonsterEffect.effect} (${gameState.pendingMonsterEffect.value})`
-              : "None"}
-          </InfoText>
-          <PlayButton
-            onClick={handlePlayerCard}
-            disabled={!selectedCard || gameState.currentTurn !== "player"}
-          >
-            Play Card
-          </PlayButton>
-          <PlayButton
-            onClick={handleEndTurn}
-            disabled={gameState.currentTurn !== "player"}
-          >
-            End Turn
-          </PlayButton>
-        </BattleInfoArea>
+        <BattleInfoPanel
+          selectedCard={selectedCard}
+          currentTurn={gameState.currentTurn}
+          pendingMonsterEffect={gameState.pendingMonsterEffect}
+          onPlayCard={handlePlayerCard}
+          onEndTurn={handleEndTurn}
+          isPlayCardDisabled={
+            !selectedCard || gameState.currentTurn !== "player"
+          }
+          isEndTurnDisabled={gameState.currentTurn !== "player"}
+        />
       </CenterArea>
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
@@ -276,18 +263,6 @@ const MonsterArea = styled.div`
   text-align: center;
 `;
 
-const BattleInfoArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-`;
-
 const PlayerArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -306,18 +281,6 @@ const SectionTitle = styled.h2`
 
 const InfoText = styled.p`
   margin: 0;
-`;
-
-const PlayButton = styled.button`
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
 `;
 
 const CenterArea = styled.div`
