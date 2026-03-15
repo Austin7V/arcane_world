@@ -28,12 +28,20 @@ export default function BattleScreen({ gameState, setGameState }) {
     }
 
     let effectiveDamage = selectedCard.damage;
+    let effectiveArmorGain = selectedCard.armor;
+    let nextPendingMonsterEffect = gameState.pendingMonsterEffect;
 
     if (gameState.pendingMonsterEffect?.effect === "playerMaxDamageNextTurn") {
       effectiveDamage = Math.min(
         selectedCard.damage,
         gameState.pendingMonsterEffect.value
       );
+      nextPendingMonsterEffect = null;
+    }
+
+    if (gameState.pendingMonsterEffect?.effect === "blockArmorGainNextTurn") {
+      effectiveArmorGain = 0;
+      nextPendingMonsterEffect = null;
     }
 
     const updatedHand = gameState.player.hand.filter(
@@ -42,7 +50,7 @@ export default function BattleScreen({ gameState, setGameState }) {
 
     const updatedPlayerArmor = Math.min(
       4,
-      gameState.player.armor + selectedCard.armor
+      gameState.player.armor + effectiveArmorGain
     );
 
     const updatedMonsterDeck =
@@ -52,7 +60,7 @@ export default function BattleScreen({ gameState, setGameState }) {
 
     setGameState({
       ...gameState,
-      pendingMonsterEffect: null,
+      pendingMonsterEffect: nextPendingMonsterEffect,
       player: {
         ...gameState.player,
         hand: updatedHand,
@@ -66,7 +74,7 @@ export default function BattleScreen({ gameState, setGameState }) {
     });
 
     addBattleLogMessage(
-      `Player used ${selectedCard.name} (damage: ${effectiveDamage}, armor: ${selectedCard.armor}, draw: ${selectedCard.draw})`
+      `Player used ${selectedCard.name} (damage: ${effectiveDamage}, armor: ${effectiveArmorGain}, draw: ${selectedCard.draw})`
     );
 
     setSelectedCard(null);
@@ -95,20 +103,25 @@ export default function BattleScreen({ gameState, setGameState }) {
     if (randomActionType === "strike") {
       const strikeDamage = randomMonsterCard.actions.strike.damage;
 
+      const shouldIgnoreArmor =
+        gameState.pendingMonsterEffect?.effect === "ignoreArmorNextTurn";
+
+      const nextPendingMonsterEffect = shouldIgnoreArmor
+        ? null
+        : gameState.pendingMonsterEffect;
+
       const updatedPlayerAfterStrike = applyMonsterStrike(
         gameState.player,
-        strikeDamage
+        strikeDamage,
+        shouldIgnoreArmor
       );
 
-      const updatedPlayerAfterDraw = drawCardsToHand({
-        ...updatedPlayerAfterStrike,
-        pendingDraw: gameState.player.pendingDraw,
-      });
+      const updatedPlayerAfterDraw = drawCardsToHand(updatedPlayerAfterStrike);
 
       setGameState({
         ...gameState,
         currentTurn: "player",
-        pendingMonsterEffect: null,
+        pendingMonsterEffect: nextPendingMonsterEffect,
         player: {
           ...gameState.player,
           armor: updatedPlayerAfterDraw.armor,
@@ -130,16 +143,51 @@ export default function BattleScreen({ gameState, setGameState }) {
     if (randomActionType === "bite") {
       const biteEffect = randomMonsterCard.actions.bite;
 
-      const updatedPlayerAfterDraw = drawCardsToHand({
+      let updatedPlayer = {
         ...gameState.player,
-      });
+      };
+
+      let nextPendingMonsterEffect = biteEffect;
+      let biteLogMessage = `Monster used ${randomMonsterCard.name} with Bite (${biteEffect.effect})`;
+
+      if (biteEffect.effect === "discardRandomCard") {
+        if (updatedPlayer.hand.length > 0) {
+          const discardIndex = Math.floor(
+            Math.random() * updatedPlayer.hand.length
+          );
+          const discardedCard = updatedPlayer.hand[discardIndex];
+
+          updatedPlayer.hand = updatedPlayer.hand.filter(
+            (_, index) => index !== discardIndex
+          );
+
+          biteLogMessage = `Monster used ${randomMonsterCard.name} with Bite and discarded ${discardedCard.name}`;
+        }
+
+        nextPendingMonsterEffect = null;
+      }
+
+      const drawPenalty =
+        biteEffect.effect === "playerDrawReductionNextTurn"
+          ? biteEffect.value
+          : 0;
+
+      const updatedPlayerAfterDraw = drawCardsToHand(
+        updatedPlayer,
+        drawPenalty
+      );
+
+      if (biteEffect.effect === "playerDrawReductionNextTurn") {
+        nextPendingMonsterEffect = null;
+      }
 
       setGameState({
         ...gameState,
         currentTurn: "player",
-        pendingMonsterEffect: biteEffect,
+        pendingMonsterEffect: nextPendingMonsterEffect,
         player: {
           ...gameState.player,
+          armor: updatedPlayerAfterDraw.armor,
           hand: updatedPlayerAfterDraw.hand,
           deck: updatedPlayerAfterDraw.deck,
           pendingDraw: updatedPlayerAfterDraw.pendingDraw,
@@ -150,9 +198,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         },
       });
 
-      addBattleLogMessage(
-        `Monster used ${randomMonsterCard.name} with Bite (${biteEffect.effect})`
-      );
+      addBattleLogMessage(biteLogMessage);
     }
 
     setSelectedCard(null);
