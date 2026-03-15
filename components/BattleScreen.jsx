@@ -4,6 +4,7 @@ import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import drawCardsToHand from "../lib/drawCardsToHand.js";
+import applyMonsterStrike from "@/lib/applyMonsterStrike";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -66,6 +67,31 @@ export default function BattleScreen({ gameState, setGameState }) {
     });
   }
 
+  function handleMonsterTurn() {
+    if (gameState.currentMonster.deck.length === 0) {
+      return;
+    }
+
+    const randomIndex = Math.floor(
+      Math.random() * gameState.currentMonster.deck.length
+    );
+
+    const randomMonsterCard = gameState.currentMonster.deck[randomIndex];
+    const strikeDamage = randomMonsterCard.actions.strike.damage;
+
+    const updatedPlayer = applyMonsterStrike(gameState.player, strikeDamage);
+
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        armor: updatedPlayer.armor,
+        deck: updatedPlayer.deck,
+        hand: updatedPlayer.hand,
+      },
+    });
+  }
+
   return (
     <Wrapper>
       <MonsterArea>
@@ -84,6 +110,7 @@ export default function BattleScreen({ gameState, setGameState }) {
           Play Card
         </PlayButton>
         <PlayButton onClick={handleResolveDraw}>Resolve Draw</PlayButton>
+        <PlayButton onClick={handleMonsterTurn}>Monster Turn</PlayButton>
       </BattleInfoArea>
 
       <PlayerArea>
