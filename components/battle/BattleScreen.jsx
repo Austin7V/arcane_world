@@ -7,6 +7,7 @@ import BattleLog from "./BattleLog";
 import BattleInfoPanel from "./BattleInfoPanel";
 import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
+import getBattleResult from "@/lib/game/getBattleResult";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -18,6 +19,7 @@ export default function BattleScreen({ gameState, setGameState }) {
 
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
+  const battleResult = getBattleResult(gameState);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
@@ -61,6 +63,7 @@ export default function BattleScreen({ gameState, setGameState }) {
           selectedCard={selectedCard}
           currentTurn={gameState.currentTurn}
           pendingMonsterEffect={gameState.pendingMonsterEffect}
+          battleResult={battleResult}
           onPlayCard={handlePlayerCard}
           onEndTurn={handleEndTurn}
           isPlayCardDisabled={
