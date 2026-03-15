@@ -3,10 +3,18 @@ import PlayerHand from "./PlayerHand";
 import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
-import drawCardsToHand from "../lib/drawCardsToHand.js";
+import BattleLog from "./BattleLog";
+import BattleInfoPanel from "./BattleInfoPanel";
+import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
+import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
+  const [battleLogMessages, setBattleLogMessages] = useState([]);
+
+  function addBattleLogMessage(message) {
+    setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
+  }
 
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
@@ -16,54 +24,27 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   function handlePlayerCard() {
-    if (!selectedCard) {
+    const result = resolvePlayerCardPlay(gameState, selectedCard);
+
+    if (!result) {
       return;
     }
 
-    const updatedHand = gameState.player.hand.filter(
-      (card) => card.id !== selectedCard.id
-    );
-
-    const updatedPlayerArmor = Math.min(
-      4,
-      gameState.player.armor + selectedCard.armor
-    );
-
-    const updatedMonsterDeck = gameState.currentMonster.deck.slice(
-      selectedCard.damage
-    );
-
-    const updatedPendingDraw = gameState.player.pendingDraw + selectedCard.draw;
-
-    setGameState({
-      ...gameState,
-      player: {
-        ...gameState.player,
-        hand: updatedHand,
-        armor: updatedPlayerArmor,
-        pendingDraw: updatedPendingDraw,
-      },
-      currentMonster: {
-        ...gameState.currentMonster,
-        deck: updatedMonsterDeck,
-      },
-    });
-
+    setGameState(result.nextGameState);
+    addBattleLogMessage(result.logMessage);
     setSelectedCard(null);
   }
 
-  function handleResolveDraw() {
-    const updatedPlayer = drawCardsToHand(gameState.player);
+  function handleEndTurn() {
+    const result = resolveMonsterTurn(gameState);
 
-    setGameState({
-      ...gameState,
-      player: {
-        ...gameState.player,
-        hand: updatedPlayer.hand,
-        deck: updatedPlayer.deck,
-        pendingDraw: updatedPlayer.pendingDraw,
-      },
-    });
+    if (!result) {
+      return;
+    }
+
+    setGameState(result.nextGameState);
+    addBattleLogMessage(result.logMessage);
+    setSelectedCard(null);
   }
 
   return (
@@ -74,18 +55,20 @@ export default function BattleScreen({ gameState, setGameState }) {
         <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
-
-      <BattleInfoArea>
-        <SectionTitle>Battle Info</SectionTitle>
-        <InfoText>
-          Selected card: {selectedCard ? selectedCard.name : "None"}
-        </InfoText>
-        <PlayButton onClick={handlePlayerCard} disabled={!selectedCard}>
-          Play Card
-        </PlayButton>
-        <PlayButton onClick={handleResolveDraw}>Resolve Draw</PlayButton>
-      </BattleInfoArea>
-
+      <CenterArea>
+        <BattleLog messages={battleLogMessages} />
+        <BattleInfoPanel
+          selectedCard={selectedCard}
+          currentTurn={gameState.currentTurn}
+          pendingMonsterEffect={gameState.pendingMonsterEffect}
+          onPlayCard={handlePlayerCard}
+          onEndTurn={handleEndTurn}
+          isPlayCardDisabled={
+            !selectedCard || gameState.currentTurn !== "player"
+          }
+          isEndTurnDisabled={gameState.currentTurn !== "player"}
+        />
+      </CenterArea>
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
@@ -122,18 +105,6 @@ const MonsterArea = styled.div`
   text-align: center;
 `;
 
-const BattleInfoArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-`;
-
 const PlayerArea = styled.div`
   display: flex;
   flex-direction: column;
@@ -154,14 +125,9 @@ const InfoText = styled.p`
   margin: 0;
 `;
 
-const PlayButton = styled.button`
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
+const CenterArea = styled.div`
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: stretch;
 `;
