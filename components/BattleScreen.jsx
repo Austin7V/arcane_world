@@ -77,40 +77,74 @@ export default function BattleScreen({ gameState, setGameState }) {
     );
 
     const randomMonsterCard = gameState.currentMonster.deck[randomIndex];
+    const randomActionType = Math.random() < 0.5 ? "strike" : "bite";
+
     const updatedMonsterDeck = gameState.currentMonster.deck.filter(
       (_, index) => index !== randomIndex
     );
-    const strikeDamage = randomMonsterCard.actions.strike.damage;
 
-    const updatedPlayerAfterStrike = applyMonsterStrike(
-      gameState.player,
-      strikeDamage
-    );
+    if (randomActionType === "strike") {
+      const strikeDamage = randomMonsterCard.actions.strike.damage;
 
-    const updatedPlayerAfterDraw = drawCardsToHand({
-      ...updatedPlayerAfterStrike,
-      pendingDraw: gameState.player.pendingDraw,
-    });
+      const updatedPlayerAfterStrike = applyMonsterStrike(
+        gameState.player,
+        strikeDamage
+      );
 
-    setGameState({
-      ...gameState,
-      currentTurn: "player",
-      player: {
+      const updatedPlayerAfterDraw = drawCardsToHand({
+        ...updatedPlayerAfterStrike,
+        pendingDraw: gameState.player.pendingDraw,
+      });
+
+      setGameState({
+        ...gameState,
+        currentTurn: "player",
+        pendingMonsterEffect: null,
+        player: {
+          ...gameState.player,
+          armor: updatedPlayerAfterDraw.armor,
+          hand: updatedPlayerAfterDraw.hand,
+          deck: updatedPlayerAfterDraw.deck,
+          pendingDraw: updatedPlayerAfterDraw.pendingDraw,
+        },
+        currentMonster: {
+          ...gameState.currentMonster,
+          deck: updatedMonsterDeck,
+        },
+      });
+
+      addBattleLogMessage(
+        `Monster used ${randomMonsterCard.name} with Strike for ${strikeDamage} damage`
+      );
+    }
+
+    if (randomActionType === "bite") {
+      const biteEffect = randomMonsterCard.actions.bite;
+
+      const updatedPlayerAfterDraw = drawCardsToHand({
         ...gameState.player,
-        armor: updatedPlayerAfterDraw.armor,
-        hand: updatedPlayerAfterDraw.hand,
-        deck: updatedPlayerAfterDraw.deck,
-        pendingDraw: updatedPlayerAfterDraw.pendingDraw,
-      },
-      currentMonster: {
-        ...gameState.currentMonster,
-        deck: updatedMonsterDeck,
-      },
-    });
+      });
 
-    addBattleLogMessage(
-      `Monster used ${randomMonsterCard.name} with Strike for ${strikeDamage} damage`
-    );
+      setGameState({
+        ...gameState,
+        currentTurn: "player",
+        pendingMonsterEffect: biteEffect,
+        player: {
+          ...gameState.player,
+          hand: updatedPlayerAfterDraw.hand,
+          deck: updatedPlayerAfterDraw.deck,
+          pendingDraw: updatedPlayerAfterDraw.pendingDraw,
+        },
+        currentMonster: {
+          ...gameState.currentMonster,
+          deck: updatedMonsterDeck,
+        },
+      });
+
+      addBattleLogMessage(
+        `Monster used ${randomMonsterCard.name} with Bite (${biteEffect.effect})`
+      );
+    }
 
     setSelectedCard(null);
   }
