@@ -5,9 +5,15 @@ import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import drawCardsToHand from "../lib/drawCardsToHand.js";
 import applyMonsterStrike from "@/lib/applyMonsterStrike";
+import BattleLog from "./BattleLog";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
+  const [battleLogMessages, setBattleLogMessages] = useState([]);
+
+  function addBattleLogMessage(message) {
+    setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
+  }
 
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
@@ -50,6 +56,10 @@ export default function BattleScreen({ gameState, setGameState }) {
       },
     });
 
+    addBattleLogMessage(
+      `Player used ${selectedCard.name} (damage: ${selectedCard.damage}, armor: ${selectedCard.armor}, draw: ${selectedCard.draw})`
+    );
+
     setSelectedCard(null);
   }
 
@@ -90,6 +100,11 @@ export default function BattleScreen({ gameState, setGameState }) {
         pendingDraw: updatedPlayerAfterDraw.pendingDraw,
       },
     });
+
+    addBattleLogMessage(
+      `Monster used ${randomMonsterCard.name} with Strike for ${strikeDamage} damage`
+    );
+
     setSelectedCard(null);
   }
 
@@ -101,27 +116,28 @@ export default function BattleScreen({ gameState, setGameState }) {
         <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
-
-      <BattleInfoArea>
-        <SectionTitle>Battle Info</SectionTitle>
-        <InfoText>
-          Selected card: {selectedCard ? selectedCard.name : "None"}
-        </InfoText>
-        <InfoText>Current turn: {gameState.currentTurn}</InfoText>
-        <PlayButton
-          onClick={handlePlayerCard}
-          disabled={!selectedCard || gameState.currentTurn !== "player"}
-        >
-          Play Card
-        </PlayButton>
-        <PlayButton
-          onClick={handleEndTurn}
-          disabled={gameState.currentTurn !== "player"}
-        >
-          End Turn
-        </PlayButton>
-      </BattleInfoArea>
-
+      <CenterArea>
+        <BattleLog messages={battleLogMessages} />
+        <BattleInfoArea>
+          <SectionTitle>Battle Info</SectionTitle>
+          <InfoText>
+            Selected card: {selectedCard ? selectedCard.name : "None"}
+          </InfoText>
+          <InfoText>Current turn: {gameState.currentTurn}</InfoText>
+          <PlayButton
+            onClick={handlePlayerCard}
+            disabled={!selectedCard || gameState.currentTurn !== "player"}
+          >
+            Play Card
+          </PlayButton>
+          <PlayButton
+            onClick={handleEndTurn}
+            disabled={gameState.currentTurn !== "player"}
+          >
+            End Turn
+          </PlayButton>
+        </BattleInfoArea>
+      </CenterArea>
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
@@ -200,4 +216,11 @@ const PlayButton = styled.button`
     cursor: not-allowed;
     opacity: 0.5;
   }
+`;
+
+const CenterArea = styled.div`
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  align-items: stretch;
 `;
