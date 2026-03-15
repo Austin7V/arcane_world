@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import BattleScreen from "../components/BattleScreen";
+import BattleScreen from "../components/battle/BattleScreen";
 import { useGame } from "../context/GameContext";
 
 export default function BattlePage() {
