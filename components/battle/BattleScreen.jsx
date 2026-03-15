@@ -8,6 +8,7 @@ import BattleInfoPanel from "./BattleInfoPanel";
 import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 import getBattleResult from "@/lib/game/getBattleResult";
+import BattleResultOverlay from "./BattleResultOverlay";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -96,6 +97,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         onSelectCard={handleSelectCard}
         selectedCard={selectedCard}
       />
+      <BattleResultOverlay battleResult={battleResult} />
     </Wrapper>
   );
 }
