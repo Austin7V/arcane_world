@@ -3,6 +3,7 @@ import PlayerHand from "./PlayerHand";
 import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
+import drawCardsToHand from "../lib/drawCardsToHand.js";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
@@ -32,8 +33,6 @@ export default function BattleScreen({ gameState, setGameState }) {
       selectedCard.damage
     );
 
-    const updatedMonsterHp = updatedMonsterDeck.length;
-
     const updatedPendingDraw = gameState.player.pendingDraw + selectedCard.draw;
 
     setGameState({
@@ -47,11 +46,24 @@ export default function BattleScreen({ gameState, setGameState }) {
       currentMonster: {
         ...gameState.currentMonster,
         deck: updatedMonsterDeck,
-        hp: updatedMonsterHp,
       },
     });
 
     setSelectedCard(null);
+  }
+
+  function handleResolveDraw() {
+    const updatedPlayer = drawCardsToHand(gameState.player);
+
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        hand: updatedPlayer.hand,
+        deck: updatedPlayer.deck,
+        pendingDraw: updatedPlayer.pendingDraw,
+      },
+    });
   }
 
   return (
@@ -71,6 +83,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         <PlayButton onClick={handlePlayerCard} disabled={!selectedCard}>
           Play Card
         </PlayButton>
+        <PlayButton onClick={handleResolveDraw}>Resolve Draw</PlayButton>
       </BattleInfoArea>
 
       <PlayerArea>
