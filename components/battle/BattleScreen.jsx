@@ -26,6 +26,10 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   function handlePlayerCard() {
+    if (battleResult) {
+      return;
+    }
+
     const result = resolvePlayerCardPlay(gameState, selectedCard);
 
     if (!result) {
@@ -38,6 +42,10 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   function handleEndTurn() {
+    if (battleResult) {
+      return;
+    }
+
     const result = resolveMonsterTurn(gameState);
 
     if (!result) {
@@ -67,9 +75,13 @@ export default function BattleScreen({ gameState, setGameState }) {
           onPlayCard={handlePlayerCard}
           onEndTurn={handleEndTurn}
           isPlayCardDisabled={
-            !selectedCard || gameState.currentTurn !== "player"
+            !selectedCard ||
+            gameState.currentTurn !== "player" ||
+            battleResult !== null
           }
-          isEndTurnDisabled={gameState.currentTurn !== "player"}
+          isEndTurnDisabled={
+            gameState.currentTurn !== "player" || battleResult !== null
+          }
         />
       </CenterArea>
       <PlayerArea>
