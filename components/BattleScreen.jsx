@@ -3,12 +3,67 @@ import PlayerHand from "./PlayerHand";
 import { useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
+import drawCardsToHand from "../lib/drawCardsToHand.js";
 
-export default function BattleScreen({ gameState }) {
+export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
+
+  const playerHP = gameState.player.deck.length + gameState.player.hand.length;
+  const monsterHP = gameState.currentMonster.deck.length;
 
   function handleSelectCard(card) {
     setSelectedCard(card);
+  }
+
+  function handlePlayerCard() {
+    if (!selectedCard) {
+      return;
+    }
+
+    const updatedHand = gameState.player.hand.filter(
+      (card) => card.id !== selectedCard.id
+    );
+
+    const updatedPlayerArmor = Math.min(
+      4,
+      gameState.player.armor + selectedCard.armor
+    );
+
+    const updatedMonsterDeck = gameState.currentMonster.deck.slice(
+      selectedCard.damage
+    );
+
+    const updatedPendingDraw = gameState.player.pendingDraw + selectedCard.draw;
+
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        hand: updatedHand,
+        armor: updatedPlayerArmor,
+        pendingDraw: updatedPendingDraw,
+      },
+      currentMonster: {
+        ...gameState.currentMonster,
+        deck: updatedMonsterDeck,
+      },
+    });
+
+    setSelectedCard(null);
+  }
+
+  function handleResolveDraw() {
+    const updatedPlayer = drawCardsToHand(gameState.player);
+
+    setGameState({
+      ...gameState,
+      player: {
+        ...gameState.player,
+        hand: updatedPlayer.hand,
+        deck: updatedPlayer.deck,
+        pendingDraw: updatedPlayer.pendingDraw,
+      },
+    });
   }
 
   return (
@@ -16,22 +71,26 @@ export default function BattleScreen({ gameState }) {
       <MonsterArea>
         <SectionTitle>Monster</SectionTitle>
         <InfoText>Name: {gameState.currentMonster.name}</InfoText>
-        <InfoText>HP: {gameState.currentMonster.hp}</InfoText>
+        <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
 
       <BattleInfoArea>
         <SectionTitle>Battle Info</SectionTitle>
-        <InfoText>The battle has started.</InfoText>
         <InfoText>
           Selected card: {selectedCard ? selectedCard.name : "None"}
         </InfoText>
+        <PlayButton onClick={handlePlayerCard} disabled={!selectedCard}>
+          Play Card
+        </PlayButton>
+        <PlayButton onClick={handleResolveDraw}>Resolve Draw</PlayButton>
       </BattleInfoArea>
 
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
-        <InfoText>HP: {gameState.player.hp}</InfoText>
+        <InfoText>HP: {playerHP}</InfoText>
+        <InfoText>Armor: {gameState.player.armor}</InfoText>
         <PlayerDeck cards={gameState.player.deck} />
       </PlayerArea>
       <PlayerHand
@@ -93,4 +152,16 @@ const SectionTitle = styled.h2`
 
 const InfoText = styled.p`
   margin: 0;
+`;
+
+const PlayButton = styled.button`
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 `;

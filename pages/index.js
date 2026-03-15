@@ -1,19 +1,16 @@
+import { useRouter } from "next/router";
 import StartScreen from "../components/StartScreen";
-import { useState } from "react";
 import createInitialGameState from "../lib/createInitialGameState";
-import BattleScreen from "@/components/BattleScreen";
+import { useGame } from "../context/GameContext";
 
 export default function HomePage() {
-  const [gameState, setGameState] = useState(null);
+  const router = useRouter();
+  const { setGameState } = useGame();
 
   function handleStartGame() {
-    const newGameState = createInitialGameState();
-    setGameState(newGameState);
+    setGameState(createInitialGameState());
+    router.push("/battle");
   }
 
-  if (!gameState) {
-    return <StartScreen onStartGame={handleStartGame} />;
-  }
-
-  return <BattleScreen gameState={gameState} />;
+  return <StartScreen onStartGame={handleStartGame} />;
 }
