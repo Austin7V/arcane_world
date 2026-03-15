@@ -174,6 +174,12 @@ export default function BattleScreen({ gameState, setGameState }) {
             Selected card: {selectedCard ? selectedCard.name : "None"}
           </InfoText>
           <InfoText>Current turn: {gameState.currentTurn}</InfoText>
+          <InfoText>
+            Active monster effect:{" "}
+            {gameState.pendingMonsterEffect
+              ? `${gameState.pendingMonsterEffect.effect} (${gameState.pendingMonsterEffect.value})`
+              : "None"}
+          </InfoText>
           <PlayButton
             onClick={handlePlayerCard}
             disabled={!selectedCard || gameState.currentTurn !== "player"}
