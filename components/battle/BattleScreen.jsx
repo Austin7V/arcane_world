@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
@@ -13,6 +13,7 @@ import BattleResultOverlay from "./BattleResultOverlay";
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
+  const [isVictoryCounted, setIsVictoryCounted] = useState(false);
 
   function addBattleLogMessage(message) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
@@ -21,6 +22,23 @@ export default function BattleScreen({ gameState, setGameState }) {
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
   const battleResult = getBattleResult(gameState);
+
+  useEffect(() => {
+    if (battleResult === "victory" && !isVictoryCounted) {
+      setGameState({
+        ...gameState,
+        victories: gameState.victories + 1,
+      });
+
+      setIsVictoryCounted(true);
+    }
+  }, [battleResult, gameState, isVictoryCounted, setGameState]);
+
+  useEffect(() => {
+    if (battleResult !== "victory" && isVictoryCounted) {
+      setIsVictoryCounted(false);
+    }
+  }, [battleResult, isVictoryCounted]);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
