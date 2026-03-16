@@ -5,12 +5,22 @@ import { useGame } from "../context/GameContext";
 
 export default function HomePage() {
   const router = useRouter();
-  const { setGameState } = useGame();
+  const { gameState, setGameState } = useGame();
 
   function handleStartGame() {
     setGameState(createInitialGameState());
     router.push("/battle");
   }
 
-  return <StartScreen onStartGame={handleStartGame} />;
+  function handleContinueGame() {
+    router.push("/battle");
+  }
+
+  return (
+    <StartScreen
+      onStartGame={handleStartGame}
+      onContinueGame={handleContinueGame}
+      hasSavedGame={Boolean(gameState)}
+    />
+  );
 }

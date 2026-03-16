@@ -5,6 +5,7 @@ export default function BattleResultOverlay({
   isBasicGameGoalReached,
   onNextBattle,
   onBackToStart,
+  onBackToMainMenu,
   onFinishRun,
 }) {
   if (!battleResult) {
@@ -19,7 +20,12 @@ export default function BattleResultOverlay({
         <ResultTitle>{resultText}</ResultTitle>
 
         {battleResult === "victory" && !isBasicGameGoalReached && (
-          <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
+          <>
+            <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
+            <ActionButton onClick={onBackToMainMenu}>
+              Back to Main Menu
+            </ActionButton>
+          </>
         )}
 
         {battleResult === "victory" && isBasicGameGoalReached && (
