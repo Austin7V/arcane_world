@@ -88,6 +88,7 @@ export default function BattleScreen({ gameState, setGameState }) {
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
+        <InfoText>Victories: {gameState.victories}</InfoText>
         <InfoText>HP: {playerHP}</InfoText>
         <InfoText>Armor: {gameState.player.armor}</InfoText>
         <PlayerDeck cards={gameState.player.deck} />
