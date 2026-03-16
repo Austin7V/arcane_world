@@ -22,6 +22,7 @@ export default function BattleScreen({ gameState, setGameState }) {
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
   const battleResult = getBattleResult(gameState);
+  const isBasicGameGoalReached = gameState.victories >= 3;
 
   useEffect(() => {
     if (battleResult === "victory" && !isVictoryCounted) {
@@ -91,6 +92,8 @@ export default function BattleScreen({ gameState, setGameState }) {
           currentTurn={gameState.currentTurn}
           pendingMonsterEffect={gameState.pendingMonsterEffect}
           battleResult={battleResult}
+          victories={gameState.victories}
+          isBasicGameGoalReached={isBasicGameGoalReached}
           onPlayCard={handlePlayerCard}
           onEndTurn={handleEndTurn}
           isPlayCardDisabled={
