@@ -9,11 +9,25 @@ import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 import getBattleResult from "@/lib/game/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
+import { useRouter } from "next/router";
+import createNextBattleState from "@/lib/game/createNextBattleState";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
   const [isVictoryCounted, setIsVictoryCounted] = useState(false);
+
+  const router = useRouter();
+
+  function handleBackToStart() {
+    setGameState(null);
+    router.push("/");
+  }
+
+  function handleNextBattle() {
+    const nextBattleState = createNextBattleState(gameState);
+    setGameState(nextBattleState);
+  }
 
   function addBattleLogMessage(message) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
@@ -119,7 +133,11 @@ export default function BattleScreen({ gameState, setGameState }) {
         onSelectCard={handleSelectCard}
         selectedCard={selectedCard}
       />
-      <BattleResultOverlay battleResult={battleResult} />
+      <BattleResultOverlay
+        battleResult={battleResult}
+        onNextBattle={handleNextBattle}
+        onBackToStart={handleBackToStart}
+      />
     </Wrapper>
   );
 }

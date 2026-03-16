@@ -1,6 +1,10 @@
 import styled from "styled-components";
 
-export default function BattleResultOverlay({ battleResult }) {
+export default function BattleResultOverlay({
+  battleResult,
+  onNextBattle,
+  onBackToStart,
+}) {
   if (!battleResult) {
     return null;
   }
@@ -11,6 +15,14 @@ export default function BattleResultOverlay({ battleResult }) {
     <Overlay>
       <ResultCard>
         <ResultTitle>{resultText}</ResultTitle>
+
+        {battleResult === "victory" && (
+          <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
+        )}
+
+        {battleResult === "defeat" && (
+          <ActionButton onClick={onBackToStart}>Back to Start</ActionButton>
+        )}
       </ResultCard>
     </Overlay>
   );
@@ -32,6 +44,9 @@ const ResultCard = styled.div`
   border-radius: 16px;
   background: rgba(10, 10, 10, 0.78);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
 
 const ResultTitle = styled.h1`
@@ -39,4 +54,11 @@ const ResultTitle = styled.h1`
   font-size: 56px;
   letter-spacing: 2px;
   text-transform: uppercase;
+`;
+
+const ActionButton = styled.button`
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 `;
