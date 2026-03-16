@@ -2,8 +2,10 @@ import styled from "styled-components";
 
 export default function BattleResultOverlay({
   battleResult,
+  isBasicGameGoalReached,
   onNextBattle,
   onBackToStart,
+  onFinishRun,
 }) {
   if (!battleResult) {
     return null;
@@ -16,8 +18,12 @@ export default function BattleResultOverlay({
       <ResultCard>
         <ResultTitle>{resultText}</ResultTitle>
 
-        {battleResult === "victory" && (
+        {battleResult === "victory" && !isBasicGameGoalReached && (
           <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
+        )}
+
+        {battleResult === "victory" && isBasicGameGoalReached && (
+          <ActionButton onClick={onFinishRun}>Finish Run</ActionButton>
         )}
 
         {battleResult === "defeat" && (

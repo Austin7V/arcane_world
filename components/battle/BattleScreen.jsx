@@ -38,6 +38,11 @@ export default function BattleScreen({ gameState, setGameState }) {
   const battleResult = getBattleResult(gameState);
   const isBasicGameGoalReached = gameState.victories >= 3;
 
+  function handleFinishRun() {
+    setGameState(null);
+    router.push("/");
+  }
+
   useEffect(() => {
     if (battleResult === "victory" && !isVictoryCounted) {
       setGameState({
@@ -135,8 +140,10 @@ export default function BattleScreen({ gameState, setGameState }) {
       />
       <BattleResultOverlay
         battleResult={battleResult}
+        isBasicGameGoalReached={isBasicGameGoalReached}
         onNextBattle={handleNextBattle}
         onBackToStart={handleBackToStart}
+        onFinishRun={handleFinishRun}
       />
     </Wrapper>
   );
