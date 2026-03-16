@@ -28,7 +28,9 @@ export default function BattleScreen({ gameState, setGameState }) {
     const nextBattleState = createNextBattleState(gameState);
     setGameState(nextBattleState);
   }
-
+  function handleBackToMainMenu() {
+    router.push("/");
+  }
   function addBattleLogMessage(message) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
   }
@@ -143,6 +145,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         isBasicGameGoalReached={isBasicGameGoalReached}
         onNextBattle={handleNextBattle}
         onBackToStart={handleBackToStart}
+        onBackToMainMenu={handleBackToMainMenu}
         onFinishRun={handleFinishRun}
       />
     </Wrapper>
