@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
@@ -14,7 +14,7 @@ import createNextBattleState from "@/lib/game/createNextBattleState";
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
-  const [isVictoryCounted, setIsVictoryCounted] = useState(false);
+  const previousBattleResultRef = useRef(null);
 
   function handleNextBattle() {
     const nextBattleState = createNextBattleState(gameState);
@@ -35,21 +35,18 @@ export default function BattleScreen({ gameState, setGameState }) {
   const isBasicGameGoalReached = gameState.victories >= 3;
 
   useEffect(() => {
-    if (battleResult === "victory" && !isVictoryCounted) {
-      setGameState({
-        ...gameState,
-        victories: gameState.victories + 1,
-      });
-
-      setIsVictoryCounted(true);
+    if (
+      battleResult === "victory" &&
+      previousBattleResultRef.current !== "victory"
+    ) {
+      setGameState((previousGameState) => ({
+        ...previousGameState,
+        victories: previousGameState.victories + 1,
+      }));
     }
-  }, [battleResult, gameState, isVictoryCounted, setGameState]);
 
-  useEffect(() => {
-    if (battleResult !== "victory" && isVictoryCounted) {
-      setIsVictoryCounted(false);
-    }
-  }, [battleResult, isVictoryCounted]);
+    previousBattleResultRef.current = battleResult;
+  }, [battleResult, setGameState]);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
@@ -95,6 +92,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
+
       <CenterArea>
         <BattleLog messages={battleLogMessages} />
         <BattleInfoPanel

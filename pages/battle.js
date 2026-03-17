@@ -5,21 +5,13 @@ import { useGame } from "../context/GameContext";
 
 export default function BattlePage() {
   const router = useRouter();
-  const { gameState, setGameState, isGameStateHydrated } = useGame();
+  const { gameState, setGameState } = useGame();
 
   useEffect(() => {
-    if (!isGameStateHydrated) {
-      return;
-    }
-
     if (!gameState) {
       router.push("/");
     }
-  }, [gameState, isGameStateHydrated, router]);
-
-  if (!isGameStateHydrated) {
-    return null;
-  }
+  }, [gameState, router]);
 
   if (!gameState) {
     return null;
