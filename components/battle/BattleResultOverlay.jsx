@@ -15,18 +15,14 @@ export default function BattleResultOverlay({
 
   const resultText = battleResult === "victory" ? "Victory" : "Defeat";
 
-  function handleBackToStart() {
-    onReset();
-    router.push("/");
+  let status = "defeat";
+
+  if (battleResult === "victory" && !isBasicGameGoalReached) {
+    status = "partial-victory";
   }
 
-  function handleFinishRun() {
-    onReset();
-    router.push("/");
-  }
-
-  function handleBackToMainMenu() {
-    router.push("/");
+  if (battleResult === "victory" && isBasicGameGoalReached) {
+    status = "game-goal-achieved";
   }
 
   return (
@@ -34,21 +30,35 @@ export default function BattleResultOverlay({
       <ResultCard>
         <ResultTitle>{resultText}</ResultTitle>
 
-        {battleResult === "victory" && !isBasicGameGoalReached && (
+        {status === "partial-victory" && (
           <>
             <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
-            <ActionButton onClick={handleBackToMainMenu}>
+            <ActionButton onClick={() => router.push("/")}>
               Back to Main Menu
             </ActionButton>
           </>
         )}
 
-        {battleResult === "victory" && isBasicGameGoalReached && (
-          <ActionButton onClick={handleFinishRun}>Finish Run</ActionButton>
+        {status === "game-goal-achieved" && (
+          <ActionButton
+            onClick={() => {
+              onReset();
+              router.push("/");
+            }}
+          >
+            Finish Run
+          </ActionButton>
         )}
 
-        {battleResult === "defeat" && (
-          <ActionButton onClick={handleBackToStart}>Back to Start</ActionButton>
+        {status === "defeat" && (
+          <ActionButton
+            onClick={() => {
+              onReset();
+              router.push("/");
+            }}
+          >
+            Back to Start
+          </ActionButton>
         )}
       </ResultCard>
     </Overlay>
