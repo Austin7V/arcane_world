@@ -8,6 +8,9 @@ import getBattleResult from "../lib/game/getBattleResult";
 export default function HomePage() {
   const router = useRouter();
   const { gameState, setGameState } = useGame();
+  const battleResult = gameState ? getBattleResult(gameState) : null;
+  const isBasicGameGoalReached = gameState ? gameState.victories >= 3 : false;
+  const hasContinuableGame = Boolean(gameState) && !isBasicGameGoalReached;
 
   function handleStartGame() {
     setGameState(createInitialGameState());
@@ -15,14 +18,11 @@ export default function HomePage() {
   }
 
   function handleContinueGame() {
-    if (!gameState) {
+    if (!gameState || isBasicGameGoalReached) {
       return;
     }
 
-    const battleResult = getBattleResult(gameState);
-    const isBasicGameGoalReached = gameState.victories >= 3;
-
-    if (battleResult === "victory" && !isBasicGameGoalReached) {
+    if (battleResult === "victory") {
       const nextBattleState = createNextBattleState(gameState);
       setGameState(nextBattleState);
       router.push("/battle");
@@ -36,7 +36,7 @@ export default function HomePage() {
     <StartScreen
       onStartGame={handleStartGame}
       onContinueGame={handleContinueGame}
-      hasSavedGame={Boolean(gameState)}
+      hasSavedGame={hasContinuableGame}
     />
   );
 }
