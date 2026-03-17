@@ -1,18 +1,33 @@
+import { useRouter } from "next/router";
 import styled from "styled-components";
 
 export default function BattleResultOverlay({
   battleResult,
   isBasicGameGoalReached,
   onNextBattle,
-  onBackToStart,
-  onBackToMainMenu,
-  onFinishRun,
+  onReset,
 }) {
+  const router = useRouter();
+
   if (!battleResult) {
     return null;
   }
 
   const resultText = battleResult === "victory" ? "Victory" : "Defeat";
+
+  function handleBackToStart() {
+    onReset();
+    router.push("/");
+  }
+
+  function handleFinishRun() {
+    onReset();
+    router.push("/");
+  }
+
+  function handleBackToMainMenu() {
+    router.push("/");
+  }
 
   return (
     <Overlay>
@@ -22,18 +37,18 @@ export default function BattleResultOverlay({
         {battleResult === "victory" && !isBasicGameGoalReached && (
           <>
             <ActionButton onClick={onNextBattle}>Next Battle</ActionButton>
-            <ActionButton onClick={onBackToMainMenu}>
+            <ActionButton onClick={handleBackToMainMenu}>
               Back to Main Menu
             </ActionButton>
           </>
         )}
 
         {battleResult === "victory" && isBasicGameGoalReached && (
-          <ActionButton onClick={onFinishRun}>Finish Run</ActionButton>
+          <ActionButton onClick={handleFinishRun}>Finish Run</ActionButton>
         )}
 
         {battleResult === "defeat" && (
-          <ActionButton onClick={onBackToStart}>Back to Start</ActionButton>
+          <ActionButton onClick={handleBackToStart}>Back to Start</ActionButton>
         )}
       </ResultCard>
     </Overlay>

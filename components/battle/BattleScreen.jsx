@@ -9,7 +9,6 @@ import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 import getBattleResult from "@/lib/game/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
-import { useRouter } from "next/router";
 import createNextBattleState from "@/lib/game/createNextBattleState";
 
 export default function BattleScreen({ gameState, setGameState }) {
@@ -17,20 +16,15 @@ export default function BattleScreen({ gameState, setGameState }) {
   const [battleLogMessages, setBattleLogMessages] = useState([]);
   const [isVictoryCounted, setIsVictoryCounted] = useState(false);
 
-  const router = useRouter();
-
-  function handleBackToStart() {
-    setGameState(null);
-    router.push("/");
-  }
-
   function handleNextBattle() {
     const nextBattleState = createNextBattleState(gameState);
     setGameState(nextBattleState);
   }
-  function handleBackToMainMenu() {
-    router.push("/");
+
+  function handleResetGame() {
+    setGameState(null);
   }
+
   function addBattleLogMessage(message) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
   }
@@ -39,11 +33,6 @@ export default function BattleScreen({ gameState, setGameState }) {
   const monsterHP = gameState.currentMonster.deck.length;
   const battleResult = getBattleResult(gameState);
   const isBasicGameGoalReached = gameState.victories >= 3;
-
-  function handleFinishRun() {
-    setGameState(null);
-    router.push("/");
-  }
 
   useEffect(() => {
     if (battleResult === "victory" && !isVictoryCounted) {
@@ -144,9 +133,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         battleResult={battleResult}
         isBasicGameGoalReached={isBasicGameGoalReached}
         onNextBattle={handleNextBattle}
-        onBackToStart={handleBackToStart}
-        onBackToMainMenu={handleBackToMainMenu}
-        onFinishRun={handleFinishRun}
+        onReset={handleResetGame}
       />
     </Wrapper>
   );
