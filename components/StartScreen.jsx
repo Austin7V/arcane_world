@@ -1,6 +1,10 @@
 import styled, { keyframes } from "styled-components";
 
-export default function StartScreen({ onStartGame }) {
+export default function StartScreen({
+  onStartGame,
+  onContinueGame,
+  hasSavedGame,
+}) {
   return (
     <Wrapper>
       <BackgroundGlow />
@@ -9,6 +13,9 @@ export default function StartScreen({ onStartGame }) {
 
       <MenuPanel>
         <Description>Start a new run.</Description>
+        {hasSavedGame && (
+          <StartButton onClick={onContinueGame}>Continue</StartButton>
+        )}
         <StartButton onClick={onStartGame}>Start Game</StartButton>
       </MenuPanel>
     </Wrapper>
@@ -95,7 +102,7 @@ const Overlay = styled.div`
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.01),
     rgba(0, 0, 0, 0.5)
   );
   z-index: 2;
@@ -107,13 +114,11 @@ const MenuPanel = styled.div`
   right: 7%;
   transform: translateY(-50%);
   z-index: 3;
-
   width: 320px;
   padding: 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-
   background: rgba(8, 12, 20, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;

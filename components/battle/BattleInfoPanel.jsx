@@ -9,6 +9,8 @@ export default function BattleInfoPanel({
   onEndTurn,
   isPlayCardDisabled,
   isEndTurnDisabled,
+  victories,
+  isBasicGameGoalReached,
 }) {
   return (
     <Wrapper>
@@ -29,7 +31,10 @@ export default function BattleInfoPanel({
           ? `${pendingMonsterEffect.effect} (${pendingMonsterEffect.value})`
           : "None"}
       </InfoText>
-
+      <InfoText>Victories: {victories}</InfoText>
+      <InfoText>
+        Basic goal: {isBasicGameGoalReached ? "Reached" : "In progress"}
+      </InfoText>
       <PlayButton onClick={onPlayCard} disabled={isPlayCardDisabled}>
         Play Card
       </PlayButton>

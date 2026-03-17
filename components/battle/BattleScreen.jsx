@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
@@ -9,10 +9,21 @@ import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
 import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 import getBattleResult from "@/lib/game/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
+import createNextBattleState from "@/lib/game/createNextBattleState";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
+  const previousBattleResultRef = useRef(null);
+
+  function handleNextBattle() {
+    const nextBattleState = createNextBattleState(gameState);
+    setGameState(nextBattleState);
+  }
+
+  function handleResetGame() {
+    setGameState(null);
+  }
 
   function addBattleLogMessage(message) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
@@ -21,6 +32,21 @@ export default function BattleScreen({ gameState, setGameState }) {
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
   const battleResult = getBattleResult(gameState);
+  const isBasicGameGoalReached = gameState.victories >= 3;
+
+  useEffect(() => {
+    if (
+      battleResult === "victory" &&
+      previousBattleResultRef.current !== "victory"
+    ) {
+      setGameState((previousGameState) => ({
+        ...previousGameState,
+        victories: previousGameState.victories + 1,
+      }));
+    }
+
+    previousBattleResultRef.current = battleResult;
+  }, [battleResult, setGameState]);
 
   function handleSelectCard(card) {
     setSelectedCard(card);
@@ -66,6 +92,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         <InfoText>HP: {monsterHP}</InfoText>
         <MonsterDeck cards={gameState.currentMonster.deck} />
       </MonsterArea>
+
       <CenterArea>
         <BattleLog messages={battleLogMessages} />
         <BattleInfoPanel
@@ -73,6 +100,8 @@ export default function BattleScreen({ gameState, setGameState }) {
           currentTurn={gameState.currentTurn}
           pendingMonsterEffect={gameState.pendingMonsterEffect}
           battleResult={battleResult}
+          victories={gameState.victories}
+          isBasicGameGoalReached={isBasicGameGoalReached}
           onPlayCard={handlePlayerCard}
           onEndTurn={handleEndTurn}
           isPlayCardDisabled={
@@ -88,6 +117,7 @@ export default function BattleScreen({ gameState, setGameState }) {
       <PlayerArea>
         <SectionTitle>Player</SectionTitle>
         <InfoText>Name: {gameState.player.name}</InfoText>
+        <InfoText>Victories: {gameState.victories}</InfoText>
         <InfoText>HP: {playerHP}</InfoText>
         <InfoText>Armor: {gameState.player.armor}</InfoText>
         <PlayerDeck cards={gameState.player.deck} />
@@ -97,7 +127,12 @@ export default function BattleScreen({ gameState, setGameState }) {
         onSelectCard={handleSelectCard}
         selectedCard={selectedCard}
       />
-      <BattleResultOverlay battleResult={battleResult} />
+      <BattleResultOverlay
+        battleResult={battleResult}
+        isBasicGameGoalReached={isBasicGameGoalReached}
+        onNextBattle={handleNextBattle}
+        onReset={handleResetGame}
+      />
     </Wrapper>
   );
 }
