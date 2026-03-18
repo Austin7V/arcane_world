@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+import AuthBlock from "./AuthBlock";
 
 export default function StartScreen({
   onStartGame,
@@ -12,6 +13,7 @@ export default function StartScreen({
       <Overlay />
 
       <MenuPanel>
+        <AuthBlock />
         <Description>Start a new run.</Description>
         {hasSavedGame && (
           <StartButton onClick={onContinueGame}>Continue</StartButton>
