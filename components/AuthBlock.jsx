@@ -11,7 +11,7 @@ export default function AuthBlock() {
     return (
       <div>
         <p>Signed in as {session.user?.name}</p>
-        <button type="button" onClick={() => signOut()}>
+        <button type="button" onClick={() => signOut({ callbackUrl: "/" })}>
           Sign out
         </button>
       </div>
@@ -19,7 +19,10 @@ export default function AuthBlock() {
   }
 
   return (
-    <button type="button" onClick={() => signIn("google")}>
+    <button
+      type="button"
+      onClick={() => signIn("google", { callbackUrl: "/" })}
+    >
       Sign in with Google
     </button>
   );
