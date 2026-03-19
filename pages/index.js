@@ -6,6 +6,7 @@ import createInitialGameState from "../lib/game/createInitialGameState";
 import { useGame } from "../context/GameContext";
 import createNextBattleState from "../lib/game/createNextBattleState";
 import getBattleResult from "../lib/game/getBattleResult";
+import createPersistedGameState from "../lib/game/createPersistedGameState";
 
 export default function HomePage() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function HomePage() {
             name: session.user.name,
             email: session.user.email,
             image: session.user.image || "",
-            activeGameState: newGameState,
+            activeGameState: createPersistedGameState(newGameState),
           }),
         });
       } catch (error) {
