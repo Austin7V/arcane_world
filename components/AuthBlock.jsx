@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useGame } from "../context/GameContext";
 
 export default function AuthBlock() {
   const { data: session, status } = useSession();
+  const { setGameState } = useGame();
   const [profileStatus, setProfileStatus] = useState("idle");
 
   useEffect(() => {
@@ -70,7 +72,13 @@ export default function AuthBlock() {
           </TextGroup>
         </UserInfo>
 
-        <AuthButton type="button" onClick={() => signOut({ callbackUrl: "/" })}>
+        <AuthButton
+          type="button"
+          onClick={() => {
+            setGameState(null);
+            signOut({ callbackUrl: "/" });
+          }}
+        >
           Sign out
         </AuthButton>
       </Wrapper>
