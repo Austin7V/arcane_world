@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import BattleScreen from "../components/battle/BattleScreen";
 import { useGame } from "../context/GameContext";
+import createPersistedGameState from "@/lib/game/createPersistedGameState";
 
 export default function BattlePage() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function BattlePage() {
             name: session.user.name,
             email: session.user.email,
             image: session.user.image || "",
-            activeGameState: gameState,
+            activeGameState: createPersistedGameState(gameState),
           }),
         });
       } catch (error) {
