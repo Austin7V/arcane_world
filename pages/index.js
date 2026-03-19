@@ -77,7 +77,7 @@ export default function HomePage() {
     router.push("/battle");
   }
 
-  function handleContinueGame() {
+  async function handleContinueGame() {
     if (!gameState || isBasicGameGoalReached) {
       return;
     }
@@ -85,6 +85,27 @@ export default function HomePage() {
     if (battleResult === "victory") {
       const nextBattleState = createNextBattleState(gameState);
       setGameState(nextBattleState);
+
+      if (session?.user?.email && session?.user?.name) {
+        try {
+          await fetch("/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              googleId: session.user.email,
+              name: session.user.name,
+              email: session.user.email,
+              image: session.user.image || "",
+              activeGameState: createPersistedGameState(nextBattleState),
+            }),
+          });
+        } catch (error) {
+          console.error("Failed to save continued game state:", error);
+        }
+      }
+
       router.push("/battle");
       return;
     }
