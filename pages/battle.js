@@ -34,6 +34,8 @@ export default function BattlePage() {
             email: session.user.email,
             image: session.user.image || "",
             activeGameState: createPersistedGameState(gameState),
+            totalWins: gameState.victories,
+            currentStage: gameState.victories + 1,
           }),
         });
       } catch (error) {
