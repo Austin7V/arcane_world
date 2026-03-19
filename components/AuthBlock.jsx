@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useGame } from "../context/GameContext";
+import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
+import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 
 export default function AuthBlock() {
   const { data: session, status } = useSession();
+  const { setGameState } = useGame();
   const [profileStatus, setProfileStatus] = useState("idle");
 
   useEffect(() => {
@@ -14,19 +18,12 @@ export default function AuthBlock() {
 
       try {
         setProfileStatus("loading");
+        const requestBody = createUserSyncPayload(session.user);
+        if (!requestBody) {
+          return;
+        }
 
-        const response = await fetch("/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            googleId: session.user.email,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image || "",
-          }),
-        });
+        await syncUserToDatabase(requestBody);
 
         if (!response.ok) {
           throw new Error("Failed to sync user profile");
@@ -70,7 +67,13 @@ export default function AuthBlock() {
           </TextGroup>
         </UserInfo>
 
-        <AuthButton type="button" onClick={() => signOut({ callbackUrl: "/" })}>
+        <AuthButton
+          type="button"
+          onClick={() => {
+            setGameState(null);
+            signOut({ callbackUrl: "/" });
+          }}
+        >
           Sign out
         </AuthButton>
       </Wrapper>
