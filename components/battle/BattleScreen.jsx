@@ -12,6 +12,7 @@ import getBattleResult from "@/lib/game/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
 import createNextBattleState from "@/lib/game/createNextBattleState";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
+import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const { data: session } = useSession();
@@ -40,13 +41,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         requestBody.currentStage = 1;
       }
 
-      await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      await syncUserToDatabase(requestBody);
     } catch (error) {
       console.error("Failed to reset saved game progress:", error);
     }
@@ -69,13 +64,7 @@ export default function BattleScreen({ gameState, setGameState }) {
         return;
       }
 
-      await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      await syncUserToDatabase(requestBody);
     } catch (error) {
       console.error("Failed to save victory progress:", error);
     }

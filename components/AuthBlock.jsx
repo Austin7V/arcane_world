@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useGame } from "../context/GameContext";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
+import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 
 export default function AuthBlock() {
   const { data: session, status } = useSession();
@@ -22,13 +23,7 @@ export default function AuthBlock() {
           return;
         }
 
-        const response = await fetch("/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
+        await syncUserToDatabase(requestBody);
 
         if (!response.ok) {
           throw new Error("Failed to sync user profile");
