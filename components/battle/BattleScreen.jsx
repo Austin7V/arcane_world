@@ -73,7 +73,7 @@ export default function BattleScreen({ gameState, setGameState }) {
           email: session.user.email,
           image: session.user.image || "",
           incrementWins: true,
-          currentStage: gameState.victories + 1,
+          currentStage: gameState.victories + 2,
         }),
       });
     } catch (error) {
