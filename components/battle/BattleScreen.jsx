@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import PlayerHand from "./PlayerHand";
 import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
@@ -12,6 +13,7 @@ import BattleResultOverlay from "./BattleResultOverlay";
 import createNextBattleState from "@/lib/game/createNextBattleState";
 
 export default function BattleScreen({ gameState, setGameState }) {
+  const { data: session } = useSession();
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
   const previousBattleResultRef = useRef(null);
@@ -21,7 +23,32 @@ export default function BattleScreen({ gameState, setGameState }) {
     setGameState(nextBattleState);
   }
 
-  function handleResetGame() {
+  async function handleResetGame() {
+    if (
+      battleResult === "defeat" &&
+      session?.user?.email &&
+      session?.user?.name
+    ) {
+      try {
+        await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            googleId: session.user.email,
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image || "",
+            activeGameState: null,
+            totalLosses: 1,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to save defeat progress:", error);
+      }
+    }
+
     setGameState(null);
   }
 
