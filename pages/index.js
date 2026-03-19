@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import StartScreen from "../components/StartScreen";
 import createInitialGameState from "../lib/game/createInitialGameState";
@@ -7,7 +9,41 @@ import getBattleResult from "../lib/game/getBattleResult";
 
 export default function HomePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const { gameState, setGameState } = useGame();
+
+  useEffect(() => {
+    async function loadActiveGameState() {
+      if (!session?.user?.email) {
+        return;
+      }
+
+      if (gameState) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/users?googleId=${encodeURIComponent(session.user.email)}`
+        );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.user?.activeGameState) {
+          setGameState(data.user.activeGameState);
+        }
+      } catch (error) {
+        console.error("Failed to load active game state:", error);
+      }
+    }
+
+    loadActiveGameState();
+  }, [session, gameState, setGameState]);
+
   const battleResult = gameState ? getBattleResult(gameState) : null;
   const isBasicGameGoalReached = gameState ? gameState.victories >= 3 : false;
   const hasContinuableGame = Boolean(gameState) && !isBasicGameGoalReached;
