@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useGame } from "../context/GameContext";
+import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 
 export default function AuthBlock() {
   const { data: session, status } = useSession();
@@ -16,18 +17,17 @@ export default function AuthBlock() {
 
       try {
         setProfileStatus("loading");
+        const requestBody = createUserSyncPayload(session.user);
+        if (!requestBody) {
+          return;
+        }
 
         const response = await fetch("/api/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            googleId: session.user.email,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image || "",
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {

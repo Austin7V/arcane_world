@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import BattleScreen from "../components/battle/BattleScreen";
 import { useGame } from "../context/GameContext";
-import createPersistedGameState from "@/lib/game/createPersistedGameState";
+import createPersistedGameState from "../lib/game/createPersistedGameState";
+import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
+import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 
 export default function BattlePage() {
   const router = useRouter();
@@ -18,24 +20,20 @@ export default function BattlePage() {
 
   useEffect(() => {
     async function saveActiveGameState() {
-      if (!session?.user?.email || !session?.user?.name || !gameState) {
+      if (!gameState) {
+        return;
+      }
+
+      const requestBody = createUserSyncPayload(session?.user, {
+        activeGameState: createPersistedGameState(gameState),
+      });
+
+      if (!requestBody) {
         return;
       }
 
       try {
-        await fetch("/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            googleId: session.user.email,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image || "",
-            activeGameState: createPersistedGameState(gameState),
-          }),
-        });
+        await syncUserToDatabase(requestBody);
       } catch (error) {
         console.error("Failed to save active game state:", error);
       }

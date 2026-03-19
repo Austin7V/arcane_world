@@ -11,6 +11,7 @@ import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
 import getBattleResult from "@/lib/game/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
 import createNextBattleState from "@/lib/game/createNextBattleState";
+import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 
 export default function BattleScreen({ gameState, setGameState }) {
   const { data: session } = useSession();
@@ -24,31 +25,30 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   async function handleResetGame() {
-    if (session?.user?.email && session?.user?.name) {
-      try {
-        const requestBody = {
-          googleId: session.user.email,
-          name: session.user.name,
-          email: session.user.email,
-          image: session.user.image || "",
-          activeGameState: null,
-        };
+    try {
+      const requestBody = createUserSyncPayload(session?.user, {
+        activeGameState: null,
+      });
 
-        if (battleResult === "defeat") {
-          requestBody.incrementLosses = true;
-          requestBody.currentStage = 1;
-        }
-
-        await fetch("/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
-      } catch (error) {
-        console.error("Failed to reset saved game progress:", error);
+      if (!requestBody) {
+        setGameState(null);
+        return;
       }
+
+      if (battleResult === "defeat") {
+        requestBody.incrementLosses = true;
+        requestBody.currentStage = 1;
+      }
+
+      await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+    } catch (error) {
+      console.error("Failed to reset saved game progress:", error);
     }
 
     setGameState(null);
@@ -59,24 +59,22 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   async function saveVictoryProgress() {
-    if (!session?.user?.email || !session?.user?.name) {
-      return;
-    }
-
     try {
+      const requestBody = createUserSyncPayload(session?.user, {
+        incrementWins: true,
+        currentStage: gameState.victories + 2,
+      });
+
+      if (!requestBody) {
+        return;
+      }
+
       await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          googleId: session.user.email,
-          name: session.user.name,
-          email: session.user.email,
-          image: session.user.image || "",
-          incrementWins: true,
-          currentStage: gameState.victories + 2,
-        }),
+        body: JSON.stringify(requestBody),
       });
     } catch (error) {
       console.error("Failed to save victory progress:", error);
