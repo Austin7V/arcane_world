@@ -48,6 +48,7 @@ export default function HomePage() {
   const battleResult = gameState ? getBattleResult(gameState) : null;
   const isBasicGameGoalReached = gameState ? gameState.victories >= 3 : false;
   const hasContinuableGame = Boolean(gameState) && !isBasicGameGoalReached;
+  const isAuthenticated = Boolean(session?.user?.email && session?.user?.name);
 
   async function handleStartGame() {
     if (!session?.user?.email || !session?.user?.name) {
@@ -124,6 +125,7 @@ export default function HomePage() {
       onStartGame={handleStartGame}
       onContinueGame={handleContinueGame}
       hasSavedGame={hasContinuableGame}
+      isAuthenticated={isAuthenticated}
     />
   );
 }

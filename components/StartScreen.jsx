@@ -5,6 +5,7 @@ export default function StartScreen({
   onStartGame,
   onContinueGame,
   hasSavedGame,
+  isAuthenticated,
 }) {
   return (
     <Wrapper>
@@ -16,9 +17,13 @@ export default function StartScreen({
         <AuthBlock />
         <Description>Start a new run.</Description>
         {hasSavedGame && (
-          <StartButton onClick={onContinueGame}>Continue</StartButton>
+          <StartButton onClick={onContinueGame} disabled={!isAuthenticated}>
+            Continue
+          </StartButton>
         )}
-        <StartButton onClick={onStartGame}>Start Game</StartButton>
+        <StartButton onClick={onStartGame} disabled={!isAuthenticated}>
+          Start Game
+        </StartButton>
       </MenuPanel>
     </Wrapper>
   );
