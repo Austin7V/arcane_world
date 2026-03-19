@@ -50,6 +50,9 @@ export default function HomePage() {
   const hasContinuableGame = Boolean(gameState) && !isBasicGameGoalReached;
 
   async function handleStartGame() {
+    if (!session?.user?.email || !session?.user?.name) {
+      return;
+    }
     const newGameState = createInitialGameState();
 
     setGameState(newGameState);
