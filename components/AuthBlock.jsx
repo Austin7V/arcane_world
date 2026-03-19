@@ -1,8 +1,48 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function AuthBlock() {
   const { data: session, status } = useSession();
+  const [profileStatus, setProfileStatus] = useState("idle");
+
+  useEffect(() => {
+    async function syncUserProfile() {
+      if (!session?.user?.email || !session?.user?.name) {
+        return;
+      }
+
+      try {
+        setProfileStatus("loading");
+
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            googleId: session.user.email,
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image || "",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to sync user profile");
+        }
+
+        setProfileStatus("success");
+      } catch (error) {
+        console.error("Profile sync error:", error);
+        setProfileStatus("error");
+      }
+    }
+
+    if (session) {
+      syncUserProfile();
+    }
+  }, [session]);
 
   if (status === "loading") {
     return <StatusText>Loading authentication...</StatusText>;
@@ -22,6 +62,11 @@ export default function AuthBlock() {
           <TextGroup>
             <UserName>{session.user?.name}</UserName>
             <UserEmail>{session.user?.email}</UserEmail>
+            <ProfileStatusText>
+              {profileStatus === "loading" && "Syncing profile..."}
+              {profileStatus === "success" && "Profile ready"}
+              {profileStatus === "error" && "Profile sync failed"}
+            </ProfileStatusText>
           </TextGroup>
         </UserInfo>
 
@@ -96,4 +141,10 @@ const AuthButton = styled.button`
   border: none;
   border-radius: 10px;
   cursor: pointer;
+`;
+
+const ProfileStatusText = styled.p`
+  margin: 0;
+  color: rgba(90, 170, 255, 0.9);
+  font-size: 12px;
 `;
