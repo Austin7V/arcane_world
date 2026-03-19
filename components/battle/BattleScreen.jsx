@@ -56,6 +56,31 @@ export default function BattleScreen({ gameState, setGameState }) {
     setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
   }
 
+  async function saveVictoryProgress() {
+    if (!session?.user?.email || !session?.user?.name) {
+      return;
+    }
+
+    try {
+      await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          googleId: session.user.email,
+          name: session.user.name,
+          email: session.user.email,
+          image: session.user.image || "",
+          incrementWins: true,
+          currentStage: gameState.victories + 1,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save victory progress:", error);
+    }
+  }
+
   const playerHP = gameState.player.deck.length + gameState.player.hand.length;
   const monsterHP = gameState.currentMonster.deck.length;
   const battleResult = getBattleResult(gameState);
@@ -70,6 +95,8 @@ export default function BattleScreen({ gameState, setGameState }) {
         ...previousGameState,
         victories: previousGameState.victories + 1,
       }));
+
+      saveVictoryProgress();
     }
 
     previousBattleResultRef.current = battleResult;
