@@ -48,8 +48,31 @@ export default function HomePage() {
   const isBasicGameGoalReached = gameState ? gameState.victories >= 3 : false;
   const hasContinuableGame = Boolean(gameState) && !isBasicGameGoalReached;
 
-  function handleStartGame() {
-    setGameState(createInitialGameState());
+  async function handleStartGame() {
+    const newGameState = createInitialGameState();
+
+    setGameState(newGameState);
+
+    if (session?.user?.email && session?.user?.name) {
+      try {
+        await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            googleId: session.user.email,
+            name: session.user.name,
+            email: session.user.email,
+            image: session.user.image || "",
+            activeGameState: newGameState,
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to save new game state:", error);
+      }
+    }
+
     router.push("/battle");
   }
 
