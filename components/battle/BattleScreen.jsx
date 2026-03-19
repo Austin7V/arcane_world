@@ -42,6 +42,7 @@ export default function BattleScreen({ gameState, setGameState }) {
             image: session.user.image || "",
             activeGameState: null,
             incrementLosses: true,
+            currentStage: 1,
           }),
         });
       } catch (error) {
