@@ -1,17 +1,9 @@
-import { createContext, useContext } from "react";
-import useLocalStorageState from "use-local-storage-state";
+import { createContext, useContext, useState } from "react";
 
 const GameContext = createContext(null);
 
-const GAME_STATE_STORAGE_KEY = "arcane-world-game-state";
-
 export function GameProvider({ children }) {
-  const [gameState, setGameState] = useLocalStorageState(
-    GAME_STATE_STORAGE_KEY,
-    {
-      defaultValue: null,
-    }
-  );
+  const [gameState, setGameState] = useState(null);
 
   return (
     <GameContext.Provider value={{ gameState, setGameState }}>
