@@ -81,6 +81,9 @@ export default function HomePage() {
   }
 
   async function handleContinueGame() {
+    if (!session?.user?.email || !session?.user?.name) {
+      return;
+    }
     if (!gameState || isBasicGameGoalReached) {
       return;
     }
