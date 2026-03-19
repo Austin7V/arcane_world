@@ -24,29 +24,30 @@ export default function BattleScreen({ gameState, setGameState }) {
   }
 
   async function handleResetGame() {
-    if (
-      battleResult === "defeat" &&
-      session?.user?.email &&
-      session?.user?.name
-    ) {
+    if (session?.user?.email && session?.user?.name) {
       try {
+        const requestBody = {
+          googleId: session.user.email,
+          name: session.user.name,
+          email: session.user.email,
+          image: session.user.image || "",
+          activeGameState: null,
+        };
+
+        if (battleResult === "defeat") {
+          requestBody.incrementLosses = true;
+          requestBody.currentStage = 1;
+        }
+
         await fetch("/api/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            googleId: session.user.email,
-            name: session.user.name,
-            email: session.user.email,
-            image: session.user.image || "",
-            activeGameState: null,
-            incrementLosses: true,
-            currentStage: 1,
-          }),
+          body: JSON.stringify(requestBody),
         });
       } catch (error) {
-        console.error("Failed to save defeat progress:", error);
+        console.error("Failed to reset saved game progress:", error);
       }
     }
 
