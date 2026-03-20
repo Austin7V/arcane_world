@@ -24,11 +24,6 @@ export default function AuthBlock() {
         }
 
         await syncUserToDatabase(requestBody);
-
-        if (!response.ok) {
-          throw new Error("Failed to sync user profile");
-        }
-
         setProfileStatus("success");
       } catch (error) {
         console.error("Profile sync error:", error);
