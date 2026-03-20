@@ -24,7 +24,7 @@ export const BoardScene = styled.div`
   background-size: 1920px 1080px;
   background-repeat: no-repeat;
   background-position: center;
-  overflow: hidden;
+  overflow: visible;
 `;
 
 const BaseSection = styled.section`
@@ -88,13 +88,17 @@ export const PlayerDeckSection = styled(BaseSection)`
 `;
 
 export const PlayerCardsSection = styled(PanelSection)`
-  left: 1100px;
-  top: 750px;
-  width: 485px;
-  height: 300px;
+  left: 1000px;
+  top: 650px;
+  width: 800px;
+  height: 450px;
   display: flex;
-  align-items: center;
-  overflow: hidden;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  padding: 0;
 `;
 
 export const PlayerStatusSection = styled(PanelSection)`

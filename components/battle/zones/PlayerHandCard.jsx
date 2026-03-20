@@ -22,20 +22,20 @@ export default function PlayerHandCard({ card, onSelectCard, isSelected }) {
 
 const CardWrapper = styled.button`
   position: relative;
-  width: 200px;
+  width: 220px;
   aspect-ratio: 2 / 3;
   padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: 40px;
   overflow: visible;
   transition:
     transform 0.2s ease,
     filter 0.2s ease;
 
   &:hover {
-    transform: translateY(-24px) scale(1.08);
+    transform: translateY(-24px) scale(1.3);
     z-index: 20;
     filter: brightness(1.05);
   }

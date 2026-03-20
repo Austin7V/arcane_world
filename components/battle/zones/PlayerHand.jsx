@@ -24,10 +24,9 @@ const HandCards = styled.div`
   align-items: flex-end;
   flex-wrap: nowrap;
   width: 100%;
-  min-height: 320px;
-  padding: 24px 80px 12px;
-  overflow-x: auto;
-  overflow-y: visible;
+  min-height: 380px;
+  padding: 40px 100px 24px;
+  overflow: visible;
 `;
 
 const CardSlot = styled.div`

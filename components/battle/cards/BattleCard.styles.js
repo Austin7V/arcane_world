@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 export const CardButton = styled.button`
   position: relative;
-  width: 180px;
+  width: 200px;
   aspect-ratio: 2 / 3;
   padding: 0;
   border: none;
