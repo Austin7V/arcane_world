@@ -14,11 +14,32 @@ import createNextBattleState from "@/lib/game/state/createNextBattleState";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 
+const BOARD_WIDTH = 1920;
+const BOARD_HEIGHT = 1080;
+
 export default function BattleScreen({ gameState, setGameState }) {
   const { data: session } = useSession();
   const [selectedCard, setSelectedCard] = useState(null);
   const [battleLogMessages, setBattleLogMessages] = useState([]);
+  const [boardScale, setBoardScale] = useState(1);
   const previousBattleResultRef = useRef(null);
+
+  useEffect(() => {
+    function updateBoardScale() {
+      const widthScale = window.innerWidth / BOARD_WIDTH;
+      const heightScale = window.innerHeight / BOARD_HEIGHT;
+      const nextScale = Math.min(widthScale, heightScale);
+
+      setBoardScale(nextScale);
+    }
+
+    updateBoardScale();
+    window.addEventListener("resize", updateBoardScale);
+
+    return () => {
+      window.removeEventListener("resize", updateBoardScale);
+    };
+  }, []);
 
   function handleNextBattle() {
     const nextBattleState = createNextBattleState(gameState);
@@ -129,47 +150,74 @@ export default function BattleScreen({ gameState, setGameState }) {
 
   return (
     <Wrapper>
-      <MonsterArea>
-        <SectionTitle>Monster</SectionTitle>
-        <InfoText>Name: {gameState.currentMonster.name}</InfoText>
-        <InfoText>HP: {monsterHP}</InfoText>
-        <MonsterDeck cards={gameState.currentMonster.deck} />
-      </MonsterArea>
+      <Scene scale={boardScale}>
+        <Board>
+          <MonsterPortraitArea>
+            <FrameTitle>Monster</FrameTitle>
+            <InfoText>{gameState.currentMonster.name}</InfoText>
+          </MonsterPortraitArea>
 
-      <CenterArea>
-        <BattleLog messages={battleLogMessages} />
-        <BattleInfoPanel
-          selectedCard={selectedCard}
-          currentTurn={gameState.currentTurn}
-          pendingMonsterEffect={gameState.pendingMonsterEffect}
-          battleResult={battleResult}
-          victories={gameState.victories}
-          isBasicGameGoalReached={isBasicGameGoalReached}
-          onPlayCard={handlePlayerCard}
-          onEndTurn={handleEndTurn}
-          isPlayCardDisabled={
-            !selectedCard ||
-            gameState.currentTurn !== "player" ||
-            battleResult !== null
-          }
-          isEndTurnDisabled={
-            gameState.currentTurn !== "player" || battleResult !== null
-          }
-        />
-      </CenterArea>
-      <PlayerArea>
-        <SectionTitle>Player</SectionTitle>
-        <InfoText>Name: {gameState.player.name}</InfoText>
-        <InfoText>Victories: {gameState.victories}</InfoText>
-        <InfoText>HP: {playerHP}</InfoText>
-        <InfoText>Armor: {gameState.player.armor}</InfoText>
-        <PlayerDeck cards={gameState.player.deck} />
-      </PlayerArea>
-      <PlayerHand
-        cards={gameState.player.hand}
-        onSelectCard={handleSelectCard}
-        selectedCard={selectedCard}
-      />
+          <MonsterStatusArea>
+            <FrameTitle>Monster Status</FrameTitle>
+            <InfoText>HP: {monsterHP}</InfoText>
+          </MonsterStatusArea>
+
+          <MonsterDeckArea>
+            <MonsterDeck cards={gameState.currentMonster.deck} />
+          </MonsterDeckArea>
+
+          <BattleLogArea>
+            <BattleLog messages={battleLogMessages} />
+          </BattleLogArea>
+
+          <BattleInfoArea>
+            <BattleInfoPanel
+              selectedCard={selectedCard}
+              currentTurn={gameState.currentTurn}
+              pendingMonsterEffect={gameState.pendingMonsterEffect}
+              battleResult={battleResult}
+              victories={gameState.victories}
+              isBasicGameGoalReached={isBasicGameGoalReached}
+              onPlayCard={handlePlayerCard}
+              onEndTurn={handleEndTurn}
+              isPlayCardDisabled={
+                !selectedCard ||
+                gameState.currentTurn !== "player" ||
+                battleResult !== null
+              }
+              isEndTurnDisabled={
+                gameState.currentTurn !== "player" || battleResult !== null
+              }
+            />
+          </BattleInfoArea>
+
+          <PlayerDeckArea>
+            <PlayerDeck cards={gameState.player.deck} />
+          </PlayerDeckArea>
+
+          <PlayerCardsArea>
+            <PlayerHand
+              cards={gameState.player.hand}
+              onSelectCard={handleSelectCard}
+              selectedCard={selectedCard}
+            />
+          </PlayerCardsArea>
+
+          <PlayerStatusArea>
+            <FrameTitle>Player Status</FrameTitle>
+            <InfoText>{gameState.player.name}</InfoText>
+            <InfoText>HP: {playerHP}</InfoText>
+            <InfoText>Armor: {gameState.player.armor}</InfoText>
+            <InfoText>Victories: {gameState.victories}</InfoText>
+          </PlayerStatusArea>
+
+          <PlayerPortraitArea>
+            <FrameTitle>Player</FrameTitle>
+            <InfoText>{gameState.player.name}</InfoText>
+          </PlayerPortraitArea>
+        </Board>
+      </Scene>
+
       <BattleResultOverlay
         battleResult={battleResult}
         isBasicGameGoalReached={isBasicGameGoalReached}
@@ -181,48 +229,126 @@ export default function BattleScreen({ gameState, setGameState }) {
 }
 
 const Wrapper = styled.section`
-  min-height: 100vh;
-  display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  gap: 16px;
-  padding: 24px;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #05070d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const MonsterArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 24px;
+const Scene = styled.div`
+  width: 1920px;
+  height: 1080px;
+  transform: scale(${({ scale }) => scale});
+  transform-origin: center center;
+`;
+
+const Board = styled.div`
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  background-image: url("/images/battle-board.jpg");
+  background-size: 1920px 1080px;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: hidden;
+`;
+
+const BaseArea = styled.div`
+  position: absolute;
+  color: #f3f6fb;
+`;
+
+const PanelArea = styled(BaseArea)`
+  padding: 10px 12px;
+  background: rgba(10, 14, 22, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+`;
+
+const MonsterPortraitArea = styled(PanelArea)`
+  left: 900px;
+  top: 125px;
+  width: 128px;
+  height: 96px;
   text-align: center;
 `;
 
-const PlayerArea = styled.div`
+const MonsterStatusArea = styled(PanelArea)`
+  left: 1130px;
+  top: 200px;
+  width: 250px;
+  min-height: 76px;
+`;
+
+const MonsterDeckArea = styled(BaseArea)`
+  left: 1450px;
+  top: 150px;
+  width: 132px;
+  height: 178px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 24px;
+  justify-content: center;
+`;
+
+const BattleLogArea = styled(PanelArea)`
+  left: 200px;
+  top: 260px;
+  width: 170px;
+  height: 450px;
+`;
+
+const BattleInfoArea = styled(PanelArea)`
+  left: 620px;
+  top: 350px;
+  width: 690px;
+  height: 330px;
+`;
+
+const PlayerDeckArea = styled(BaseArea)`
+  left: 350px;
+  top: 710px;
+  width: 132px;
+  height: 178px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const PlayerCardsArea = styled(PanelArea)`
+  left: 1100px;
+  top: 750px;
+  width: 485px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+`;
+
+const PlayerStatusArea = styled(PanelArea)`
+  left: 570px;
+  top: 750px;
+  width: 200px;
+  min-height: 130px;
+`;
+
+const PlayerPortraitArea = styled(PanelArea)`
+  left: 900px;
+  top: 850px;
+  width: 128px;
+  height: 104px;
   text-align: center;
 `;
 
-const SectionTitle = styled.h2`
-  margin: 0 0 8px;
+const FrameTitle = styled.h3`
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
 `;
 
 const InfoText = styled.p`
   margin: 0;
-`;
-
-const CenterArea = styled.div`
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-  align-items: stretch;
+  font-size: 15px;
+  line-height: 1.3;
 `;
