@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import BattleScreen from "../components/battle/BattleScreen";
 import { useGame } from "../context/GameContext";
-import createPersistedGameState from "../lib/game/createPersistedGameState";
+import createPersistedGameState from "../lib/game/state/createPersistedGameState";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 

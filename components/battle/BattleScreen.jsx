@@ -6,11 +6,11 @@ import MonsterDeck from "./MonsterDeck";
 import PlayerDeck from "./PlayerDeck";
 import BattleLog from "./BattleLog";
 import BattleInfoPanel from "./BattleInfoPanel";
-import resolvePlayerCardPlay from "@/lib/game/resolvePlayerCardPlay";
-import resolveMonsterTurn from "@/lib/game/resolveMonsterTurn";
-import getBattleResult from "@/lib/game/getBattleResult";
+import resolvePlayerCardPlay from "@/lib/game/resolvers/resolvePlayerCardPlay";
+import resolveMonsterTurn from "@/lib/game/resolvers/resolveMonsterTurn";
+import getBattleResult from "@/lib/game/rules/getBattleResult";
 import BattleResultOverlay from "./BattleResultOverlay";
-import createNextBattleState from "@/lib/game/createNextBattleState";
+import createNextBattleState from "@/lib/game/state/createNextBattleState";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 

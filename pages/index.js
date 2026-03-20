@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import StartScreen from "../components/StartScreen";
-import createInitialGameState from "../lib/game/createInitialGameState";
-import createNextBattleState from "../lib/game/createNextBattleState";
-import createPersistedGameState from "../lib/game/createPersistedGameState";
+import createInitialGameState from "../lib/game/state/createInitialGameState";
+import createNextBattleState from "../lib/game/state/createNextBattleState";
+import createPersistedGameState from "../lib/game/state/createPersistedGameState";
 import { useGame } from "../context/GameContext";
-import getBattleResult from "../lib/game/getBattleResult";
+import getBattleResult from "../lib/game/rules/getBattleResult";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
 export default function HomePage() {
