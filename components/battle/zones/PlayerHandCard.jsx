@@ -15,7 +15,7 @@ export default function PlayerHandCard({
     <CardWrapper
       type="button"
       onClick={() => onSelectCard(card)}
-      onMouseEnter={() => onHoverCard?.(card)}
+      onMouseEnter={(event) => onHoverCard?.(card, event)}
       onMouseLeave={() => onLeaveCard?.()}
       $isSelected={isSelected}
     >
@@ -35,7 +35,7 @@ export default function PlayerHandCard({
 
 const CardWrapper = styled.button`
   position: relative;
-  width: 210px;
+  width: 180px;
   aspect-ratio: 2 / 3;
   padding: 0;
   border: none;
@@ -79,7 +79,7 @@ const StyledCardImage = styled(Image)`
 
 const SelectedGlow = styled.div`
   position: absolute;
-  inset: -10px;
+  inset: 12px;
   border-radius: 26px;
   pointer-events: none;
   z-index: 1;

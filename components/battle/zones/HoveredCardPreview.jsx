@@ -2,13 +2,13 @@ import Image from "next/image";
 import styled from "styled-components";
 import getPlayerCardImage from "@/lib/game/cards/getPlayerCardImage";
 
-export default function HoveredCardPreview({ card }) {
+export default function HoveredCardPreview({ card, previewX }) {
   if (!card) return null;
 
   const imageSrc = getPlayerCardImage(card.id);
 
   return (
-    <PreviewWrapper>
+    <PreviewWrapper style={{ left: `${previewX}px` }}>
       <PreviewCard>
         <StyledPreviewImage
           src={imageSrc}
@@ -24,15 +24,16 @@ export default function HoveredCardPreview({ card }) {
 
 const PreviewWrapper = styled.div`
   position: absolute;
-  left: 260px;
-  top: -320px;
+  top: -410px;
+  transform: translateX(-50%);
   z-index: 300;
   pointer-events: none;
+  transition: left 0.14s ease;
 `;
 
 const PreviewCard = styled.div`
   position: relative;
-  width: 380px;
+  width: 420px;
   aspect-ratio: 2 / 3;
   border-radius: 24px;
   filter: drop-shadow(0 24px 34px rgba(0, 0, 0, 0.55));

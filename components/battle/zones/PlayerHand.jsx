@@ -1,14 +1,32 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import PlayerHandCard from "./PlayerHandCard";
 import HoveredCardPreview from "./HoveredCardPreview";
 
 export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
+  const handAreaRef = useRef(null);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [previewX, setPreviewX] = useState(0);
+
+  function handleHoverCard(card, event) {
+    if (!handAreaRef.current) return;
+
+    const handRect = handAreaRef.current.getBoundingClientRect();
+    const cardRect = event.currentTarget.getBoundingClientRect();
+
+    const cardCenterX = cardRect.left - handRect.left + cardRect.width / 2;
+
+    setHoveredCard(card);
+    setPreviewX(cardCenterX);
+  }
+
+  function handleLeaveCard() {
+    setHoveredCard(null);
+  }
 
   return (
-    <HandArea>
-      <HoveredCardPreview card={hoveredCard} />
+    <HandArea ref={handAreaRef}>
+      <HoveredCardPreview card={hoveredCard} previewX={previewX} />
 
       <HandCards>
         {cards.map((card, index) => (
@@ -17,8 +35,8 @@ export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
               card={card}
               onSelectCard={onSelectCard}
               isSelected={selectedCard?.id === card.id}
-              onHoverCard={setHoveredCard}
-              onLeaveCard={() => setHoveredCard(null)}
+              onHoverCard={handleHoverCard}
+              onLeaveCard={handleLeaveCard}
             />
           </CardSlot>
         ))}
