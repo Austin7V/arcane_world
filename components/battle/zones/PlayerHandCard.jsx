@@ -2,12 +2,25 @@ import Image from "next/image";
 import styled, { css } from "styled-components";
 import getPlayerCardImage from "@/lib/game/cards/getPlayerCardImage";
 
-export default function PlayerHandCard({ card, onSelectCard, isSelected }) {
+export default function PlayerHandCard({
+  card,
+  onSelectCard,
+  isSelected,
+  onHoverCard,
+  onLeaveCard,
+}) {
   const imageSrc = getPlayerCardImage(card.id);
 
   return (
-    <CardWrapper onClick={() => onSelectCard(card)} $isSelected={isSelected}>
+    <CardWrapper
+      type="button"
+      onClick={() => onSelectCard(card)}
+      onMouseEnter={() => onHoverCard?.(card)}
+      onMouseLeave={() => onLeaveCard?.()}
+      $isSelected={isSelected}
+    >
       <CardImageWrapper>
+        {isSelected ? <SelectedGlow /> : null}
         <StyledCardImage
           src={imageSrc}
           alt={card.name}
@@ -15,7 +28,6 @@ export default function PlayerHandCard({ card, onSelectCard, isSelected }) {
           sizes="(max-width: 768px) 140px, 200px"
           priority={false}
         />
-        {isSelected ? <SelectedGlow /> : null}
       </CardImageWrapper>
     </CardWrapper>
   );
@@ -36,7 +48,7 @@ const CardWrapper = styled.button`
     filter 0.2s ease;
 
   &:hover {
-    transform: translateY(-30px) scale(1.4);
+    transform: translateY(-24px) scale(1.08);
     z-index: 20;
     filter: brightness(1.06);
   }
@@ -44,7 +56,7 @@ const CardWrapper = styled.button`
   ${({ $isSelected }) =>
     $isSelected &&
     css`
-      transform: translateY(-42px) scale(1.12);
+      transform: translateY(-34px) scale(1.12);
       z-index: 50;
       filter: brightness(1.12);
     `}
@@ -67,12 +79,12 @@ const StyledCardImage = styled(Image)`
 
 const SelectedGlow = styled.div`
   position: absolute;
-  inset: 12px;
-  border-radius: 18px;
+  inset: -10px;
+  border-radius: 26px;
   pointer-events: none;
   z-index: 1;
   box-shadow:
-    0 0 0 1px rgba(140, 220, 255, 0.95),
-    0 0 18px rgba(110, 200, 255, 0.75),
-    0 0 36px rgba(80, 150, 255, 0.45);
+    0 0 24px rgba(110, 200, 255, 0.55),
+    0 0 48px rgba(80, 150, 255, 0.4),
+    0 0 72px rgba(60, 120, 255, 0.25);
 `;

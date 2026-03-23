@@ -1,21 +1,38 @@
+import { useState } from "react";
 import styled from "styled-components";
 import PlayerHandCard from "./PlayerHandCard";
+import HoveredCardPreview from "./HoveredCardPreview";
 
 export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
+  const [hoveredCard, setHoveredCard] = useState(null);
+
   return (
-    <HandCards>
-      {cards.map((card, index) => (
-        <CardSlot key={card.id} $index={index} $total={cards.length}>
-          <PlayerHandCard
-            card={card}
-            onSelectCard={onSelectCard}
-            isSelected={selectedCard?.id === card.id}
-          />
-        </CardSlot>
-      ))}
-    </HandCards>
+    <HandArea>
+      <HoveredCardPreview card={hoveredCard} />
+
+      <HandCards>
+        {cards.map((card, index) => (
+          <CardSlot key={card.id} $index={index} $total={cards.length}>
+            <PlayerHandCard
+              card={card}
+              onSelectCard={onSelectCard}
+              isSelected={selectedCard?.id === card.id}
+              onHoverCard={setHoveredCard}
+              onLeaveCard={() => setHoveredCard(null)}
+            />
+          </CardSlot>
+        ))}
+      </HandCards>
+    </HandArea>
   );
 }
+
+const HandArea = styled.div`
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  overflow: visible;
+`;
 
 const HandCards = styled.div`
   position: relative;
@@ -41,9 +58,6 @@ const CardSlot = styled.div`
     return `translateY(${translateY}px) rotate(${rotate}deg)`;
   }};
   transform-origin: bottom center;
-  transition:
-    transform 0.2s ease,
-    z-index 0.2s ease;
 
   &:hover {
     z-index: 100;
