@@ -99,6 +99,7 @@ export default function BattleScreen({ gameState, setGameState }) {
             <BattleTableCards
               playedPlayerCardsOnTable={gameState.playedPlayerCardsOnTable}
               playedMonsterCardOnTable={gameState.playedMonsterCardOnTable}
+              playedMonsterActionType={gameState.playedMonsterActionType}
             />
           </BattleInfoSection>
           <EndTurnSection>

@@ -1,10 +1,12 @@
 import Image from "next/image";
 import styled from "styled-components";
 import getPlayerCardImage from "@/lib/game/cards/getPlayerCardImage";
+import getMonsterCardImage from "@/lib/game/cards/getMonsterCardImage";
 
 export default function BattleTableCards({
   playedPlayerCardsOnTable,
   playedMonsterCardOnTable,
+  playedMonsterActionType,
 }) {
   const hasPlayerCards = playedPlayerCardsOnTable.length > 0;
 
@@ -30,10 +32,21 @@ export default function BattleTableCards({
 
       {!hasPlayerCards && playedMonsterCardOnTable ? (
         <MonsterCardWrapper>
-          <CardLabel>Monster Card</CardLabel>
-          <MonsterPlaceholderCard>
-            {playedMonsterCardOnTable.name}
-          </MonsterPlaceholderCard>
+          <MonsterPlayedCardImageWrapper>
+            <MonsterPlayedCardImage
+              src={getMonsterCardImage(playedMonsterCardOnTable.id)}
+              alt={playedMonsterCardOnTable.name}
+              fill
+              sizes="200px"
+              priority={false}
+            />
+            {playedMonsterActionType === "strike" ? (
+              <MonsterActionGlowTop />
+            ) : null}
+            {playedMonsterActionType === "bite" ? (
+              <MonsterActionGlowBottom />
+            ) : null}
+          </MonsterPlayedCardImageWrapper>
         </MonsterCardWrapper>
       ) : null}
     </TableCardsWrapper>
@@ -64,7 +77,7 @@ const PlayerCardSlot = styled.div`
 
 const PlayedPlayerCardImageWrapper = styled.div`
   position: relative;
-  width: 160px;
+  width: 200px;
   aspect-ratio: 2 / 3;
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
 `;
@@ -89,17 +102,40 @@ const CardLabel = styled.p`
   color: rgba(243, 246, 251, 0.82);
 `;
 
-const MonsterPlaceholderCard = styled.div`
-  width: 220px;
+const MonsterPlayedCardImageWrapper = styled.div`
+  position: relative;
+  width: 200px;
   aspect-ratio: 2 / 3;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 16, 28, 0.72);
-  color: #f3f6fb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 18px;
-  text-align: center;
-  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.28);
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
+`;
+
+const MonsterPlayedCardImage = styled(Image)`
+  object-fit: contain;
+  user-select: none;
+`;
+
+const MonsterActionGlowTop = styled.div`
+  position: absolute;
+  top: 80px;
+  left: 19px;
+  right: 19px;
+  height: 59px;
+  border-radius: 15px 15px 15px 15px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 18px 34px rgba(255, 40, 40, 0.22),
+    0 0 16px rgba(255, 40, 40, 0.4);
+`;
+
+const MonsterActionGlowBottom = styled.div`
+  position: absolute;
+  top: 200px;
+  left: 19px;
+  right: 19px;
+  height: 70px;
+  border-radius: 15px 15px 15px 15px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 18px 34px rgba(255, 40, 40, 0.22),
+    0 0 16px rgba(255, 40, 40, 0.4);
 `;
