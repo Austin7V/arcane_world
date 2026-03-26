@@ -25,6 +25,7 @@ import {
   EndTurnSection,
   EndTurnButton,
 } from "./BattleScreen.styled";
+import BattleTableCards from "./panels/BattleTableCards";
 
 const BOARD_WIDTH = 1920;
 const BOARD_HEIGHT = 1080;
@@ -94,7 +95,12 @@ export default function BattleScreen({ gameState, setGameState }) {
           <BattleInfoSection
             ref={battleInfoRef}
             $isDropActive={isBattleDropActive}
-          />
+          >
+            <BattleTableCards
+              playedPlayerCardsOnTable={gameState.playedPlayerCardsOnTable}
+              playedMonsterCardOnTable={gameState.playedMonsterCardOnTable}
+            />
+          </BattleInfoSection>
           <EndTurnSection>
             <EndTurnButton
               onClick={handleEndTurn}
@@ -119,7 +125,9 @@ export default function BattleScreen({ gameState, setGameState }) {
               onDropCard={handleCardDrop}
               onDragOverBattleZone={setIsBattleDropActive}
               canDrag={
-                gameState.currentTurn === "player" && battleResult === null
+                gameState.currentTurn === "player" &&
+                battleResult === null &&
+                gameState.playedPlayerCardsOnTable.length < 4
               }
             />
           </PlayerCardsSection>
