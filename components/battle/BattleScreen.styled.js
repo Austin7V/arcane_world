@@ -70,11 +70,26 @@ export const BattleLogSection = styled(PanelSection)`
   height: 450px;
 `;
 
-export const BattleInfoSection = styled(PanelSection)`
+export const BattleInfoSection = styled(BaseSection)`
   left: 620px;
   top: 350px;
   width: 690px;
   height: 330px;
+  border-radius: 18px;
+  background: transparent;
+  border: none;
+  transition:
+    box-shadow 0.2s ease,
+    border 0.2s ease,
+    background 0.2s ease;
+
+  ${({ $isDropActive }) =>
+    $isDropActive &&
+    `
+      border: 2px solid rgba(110, 200, 255, 0.9);
+      background: rgba(30, 50, 90, 0.18);
+      box-shadow: 0 0 28px rgba(110, 200, 255, 0.28);
+    `}
 `;
 
 export const PlayerDeckSection = styled(BaseSection)`
@@ -126,4 +141,38 @@ export const InfoText = styled.p`
   margin: 0;
   font-size: 15px;
   line-height: 1.3;
+`;
+
+export const EndTurnSection = styled.section`
+  position: absolute;
+  right: 110px;
+  top: 470px;
+  z-index: 20;
+`;
+
+export const EndTurnButton = styled.button`
+  padding: 16px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(12, 18, 30, 0.78);
+  color: #f3f6fb;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: rgba(22, 32, 52, 0.88);
+    box-shadow: 0 0 18px rgba(110, 200, 255, 0.22);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
 `;

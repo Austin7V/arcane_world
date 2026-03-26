@@ -90,12 +90,16 @@ export default function useBattleScreenLogic({
     previousBattleResultRef.current = battleResult;
   }, [battleResult, setGameState]);
 
-  function handlePlayerCard() {
+  function handlePlayerCard(cardToPlay = selectedCard) {
     if (battleResult) {
       return;
     }
 
-    const result = resolvePlayerCardPlay(gameState, selectedCard);
+    if (!cardToPlay) {
+      return;
+    }
+
+    const result = resolvePlayerCardPlay(gameState, cardToPlay);
 
     if (!result) {
       return;

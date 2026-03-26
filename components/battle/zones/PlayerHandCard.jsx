@@ -8,6 +8,9 @@ export default function PlayerHandCard({
   isSelected,
   onHoverCard,
   onLeaveCard,
+  onStartDrag,
+  isDragging,
+  canDrag,
 }) {
   const imageSrc = getPlayerCardImage(card.id);
 
@@ -17,7 +20,10 @@ export default function PlayerHandCard({
       onClick={() => onSelectCard(card)}
       onMouseEnter={(event) => onHoverCard?.(card, event)}
       onMouseLeave={() => onLeaveCard?.()}
+      onMouseDown={(event) => onStartDrag?.(card, event)}
       $isSelected={isSelected}
+      $isDragging={isDragging}
+      $canDrag={canDrag}
     >
       <CardImageWrapper>
         {isSelected ? <SelectedGlow /> : null}
@@ -35,17 +41,25 @@ export default function PlayerHandCard({
 
 const CardWrapper = styled.button`
   position: relative;
-  width: 180px;
+  width: 210px;
   aspect-ratio: 2 / 3;
   padding: 0;
   border: none;
   background: transparent;
-  cursor: pointer;
+  cursor: ${({ $canDrag }) => ($canDrag ? "grab" : "default")};
   border-radius: 18px;
   overflow: visible;
   transition:
     transform 0.2s ease,
-    filter 0.2s ease;
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  ${({ $isDragging }) =>
+    $isDragging &&
+    css`
+      opacity: 0;
+      pointer-events: none;
+    `}
 
   &:hover {
     transform: translateY(-24px) scale(1.08);

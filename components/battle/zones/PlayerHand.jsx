@@ -1,19 +1,31 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import PlayerHandCard from "./PlayerHandCard";
 import HoveredCardPreview from "./HoveredCardPreview";
+import DraggedCardPreview from "./DraggedCardPreview";
 
-export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
+export default function PlayerHand({
+  cards,
+  onSelectCard,
+  selectedCard,
+  battleInfoRect,
+  onDropCard,
+  onDragOverBattleZone,
+  canDrag,
+}) {
   const handAreaRef = useRef(null);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [previewX, setPreviewX] = useState(0);
 
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [isOverBattleZone, setIsOverBattleZone] = useState(false);
+
   function handleHoverCard(card, event) {
-    if (!handAreaRef.current) return;
+    if (!handAreaRef.current || draggedCard) return;
 
     const handRect = handAreaRef.current.getBoundingClientRect();
     const cardRect = event.currentTarget.getBoundingClientRect();
-
     const cardCenterX = cardRect.left - handRect.left + cardRect.width / 2;
 
     setHoveredCard(card);
@@ -21,12 +33,75 @@ export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
   }
 
   function handleLeaveCard() {
+    if (draggedCard) return;
     setHoveredCard(null);
   }
 
+  function handleStartDrag(card, event) {
+    if (!canDrag) return;
+
+    onSelectCard(card);
+    setHoveredCard(null);
+    setDraggedCard(card);
+    setDragPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+  }
+
+  useEffect(() => {
+    if (!draggedCard) return;
+
+    function handleMouseMove(event) {
+      const nextPosition = {
+        x: event.clientX,
+        y: event.clientY,
+      };
+
+      setDragPosition(nextPosition);
+
+      if (!battleInfoRect) return;
+
+      const isInsideBattleZone =
+        nextPosition.x >= battleInfoRect.left &&
+        nextPosition.x <= battleInfoRect.right &&
+        nextPosition.y >= battleInfoRect.top &&
+        nextPosition.y <= battleInfoRect.bottom;
+
+      setIsOverBattleZone(isInsideBattleZone);
+      onDragOverBattleZone?.(isInsideBattleZone);
+    }
+
+    function handleMouseUp() {
+      if (isOverBattleZone && draggedCard) {
+        onDropCard?.(draggedCard);
+      }
+
+      setDraggedCard(null);
+      setIsOverBattleZone(false);
+      onDragOverBattleZone?.(false);
+    }
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [
+    draggedCard,
+    battleInfoRect,
+    isOverBattleZone,
+    onDropCard,
+    onDragOverBattleZone,
+  ]);
+
   return (
     <HandArea ref={handAreaRef}>
-      <HoveredCardPreview card={hoveredCard} previewX={previewX} />
+      {!draggedCard ? (
+        <HoveredCardPreview card={hoveredCard} previewX={previewX} />
+      ) : null}
 
       <HandCards>
         {cards.map((card, index) => (
@@ -37,10 +112,17 @@ export default function PlayerHand({ cards, onSelectCard, selectedCard }) {
               isSelected={selectedCard?.id === card.id}
               onHoverCard={handleHoverCard}
               onLeaveCard={handleLeaveCard}
+              onStartDrag={handleStartDrag}
+              isDragging={draggedCard?.id === card.id}
+              canDrag={canDrag}
             />
           </CardSlot>
         ))}
       </HandCards>
+
+      {draggedCard ? (
+        <DraggedCardPreview card={draggedCard} position={dragPosition} />
+      ) : null}
     </HandArea>
   );
 }

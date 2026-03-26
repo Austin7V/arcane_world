@@ -1,9 +1,9 @@
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import PlayerHand from "./zones/PlayerHand";
 import MonsterDeck from "./zones/MonsterDeck";
 import PlayerDeck from "./zones/PlayerDeck";
 import BattleLog from "./panels/BattleLog";
-import BattleInfoPanel from "./panels/BattleInfoPanel";
 import BattleResultOverlay from "./panels/BattleResultOverlay";
 import useBoardScale from "@/hooks/useBoardScale";
 import useBattleScreenLogic from "@/hooks/useBattleScreenLogic";
@@ -22,6 +22,8 @@ import {
   PlayerPortraitSection,
   FrameTitle,
   InfoText,
+  EndTurnSection,
+  EndTurnButton,
 } from "./BattleScreen.styled";
 
 const BOARD_WIDTH = 1920;
@@ -30,6 +32,11 @@ const BOARD_HEIGHT = 1080;
 export default function BattleScreen({ gameState, setGameState }) {
   const { data: session } = useSession();
   const boardScale = useBoardScale(BOARD_WIDTH, BOARD_HEIGHT);
+  const battleInfoRef = useRef(null);
+
+  const [battleInfoRect, setBattleInfoRect] = useState(null);
+  const [isBattleDropActive, setIsBattleDropActive] = useState(false);
+
   const {
     selectedCard,
     battleLogMessages,
@@ -43,6 +50,24 @@ export default function BattleScreen({ gameState, setGameState }) {
     handleNextBattle,
     handleResetGame,
   } = useBattleScreenLogic({ gameState, setGameState, session });
+
+  useEffect(() => {
+    function updateBattleInfoRect() {
+      if (!battleInfoRef.current) return;
+      setBattleInfoRect(battleInfoRef.current.getBoundingClientRect());
+    }
+
+    updateBattleInfoRect();
+    window.addEventListener("resize", updateBattleInfoRect);
+
+    return () => {
+      window.removeEventListener("resize", updateBattleInfoRect);
+    };
+  }, [boardScale]);
+
+  function handleCardDrop(card) {
+    handlePlayerCard();
+  }
 
   return (
     <Wrapper>
@@ -66,26 +91,20 @@ export default function BattleScreen({ gameState, setGameState }) {
             <BattleLog messages={battleLogMessages} />
           </BattleLogSection>
 
-          <BattleInfoSection>
-            <BattleInfoPanel
-              selectedCard={selectedCard}
-              currentTurn={gameState.currentTurn}
-              pendingMonsterEffect={gameState.pendingMonsterEffect}
-              battleResult={battleResult}
-              victories={gameState.victories}
-              isBasicGameGoalReached={isBasicGameGoalReached}
-              onPlayCard={handlePlayerCard}
-              onEndTurn={handleEndTurn}
-              isPlayCardDisabled={
-                !selectedCard ||
-                gameState.currentTurn !== "player" ||
-                battleResult !== null
-              }
-              isEndTurnDisabled={
+          <BattleInfoSection
+            ref={battleInfoRef}
+            $isDropActive={isBattleDropActive}
+          />
+          <EndTurnSection>
+            <EndTurnButton
+              onClick={handleEndTurn}
+              disabled={
                 gameState.currentTurn !== "player" || battleResult !== null
               }
-            />
-          </BattleInfoSection>
+            >
+              End Turn
+            </EndTurnButton>
+          </EndTurnSection>
 
           <PlayerDeckSection>
             <PlayerDeck cards={gameState.player.deck} />
@@ -96,6 +115,12 @@ export default function BattleScreen({ gameState, setGameState }) {
               cards={gameState.player.hand}
               onSelectCard={handleSelectCard}
               selectedCard={selectedCard}
+              battleInfoRect={battleInfoRect}
+              onDropCard={handleCardDrop}
+              onDragOverBattleZone={setIsBattleDropActive}
+              canDrag={
+                gameState.currentTurn === "player" && battleResult === null
+              }
             />
           </PlayerCardsSection>
 
