@@ -54,8 +54,8 @@ export const MonsterStatusSection = styled(PanelSection)`
 `;
 
 export const MonsterDeckSection = styled(BaseSection)`
-  left: 1450px;
-  top: 150px;
+  left: 1440px;
+  top: 115px;
   width: 132px;
   height: 178px;
   display: flex;
@@ -69,6 +69,7 @@ export const BattleLogSection = styled(PanelSection)`
   width: 80px;
   height: 450px;
   perspective: 1000px;
+  background: transparent;
   transform: rotateY(18deg) rotateX(-26deg) skewY(0deg);
   transform-origin: center center;
 `;
@@ -96,8 +97,8 @@ export const BattleInfoSection = styled(BaseSection)`
 `;
 
 export const PlayerDeckSection = styled(BaseSection)`
-  left: 350px;
-  top: 710px;
+  left: 360px;
+  top: 740px;
   width: 132px;
   height: 178px;
   display: flex;
