@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Image from "next/image";
 
 export const Wrapper = styled.section`
   width: 100vw;
@@ -29,7 +30,7 @@ export const BoardScene = styled.div`
 
 const BaseSection = styled.section`
   position: absolute;
-  color: #f3f6fb;
+  color: #fdfdfd;
 `;
 
 const PanelSection = styled(BaseSection)`
@@ -39,11 +40,15 @@ const PanelSection = styled(BaseSection)`
 `;
 
 export const MonsterPortraitSection = styled(PanelSection)`
-  left: 900px;
-  top: 125px;
-  width: 128px;
-  height: 96px;
+  left: 703px;
+  top: 5px;
+  width: 455px;
+  height: 355px;
   text-align: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
 `;
 
 export const MonsterStatusSection = styled(PanelSection)`
@@ -179,4 +184,15 @@ export const EndTurnButton = styled.button`
     cursor: not-allowed;
     opacity: 0.45;
   }
+`;
+
+export const MonsterPortraitImageWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+export const MonsterPortraitImage = styled(Image)`
+  object-fit: contain;
+  user-select: none;
 `;

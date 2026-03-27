@@ -24,8 +24,12 @@ import {
   InfoText,
   EndTurnSection,
   EndTurnButton,
+  MonsterPortraitImageWrapper,
+  MonsterPortraitImage,
 } from "./BattleScreen.styled";
 import BattleTableCards from "./panels/BattleTableCards";
+import Image from "next/image";
+import getMonsterPortraitImage from "@/lib/game/monsters/getMonsterPortraitImage";
 
 const BOARD_WIDTH = 1920;
 const BOARD_HEIGHT = 1080;
@@ -69,14 +73,26 @@ export default function BattleScreen({ gameState, setGameState }) {
   function handleCardDrop(card) {
     handlePlayerCard();
   }
+  const monsterPortraitImage = getMonsterPortraitImage(
+    gameState.currentMonster.name
+  );
 
   return (
     <Wrapper>
       <SceneWrapper style={{ transform: `scale(${boardScale})` }}>
         <BoardScene>
           <MonsterPortraitSection>
-            <FrameTitle>Monster</FrameTitle>
-            <InfoText>{gameState.currentMonster.name}</InfoText>
+            {monsterPortraitImage ? (
+              <MonsterPortraitImageWrapper>
+                <MonsterPortraitImage
+                  src={monsterPortraitImage}
+                  alt={gameState.currentMonster.name}
+                  fill
+                  sizes="600px"
+                  priority={false}
+                />
+              </MonsterPortraitImageWrapper>
+            ) : null}
           </MonsterPortraitSection>
 
           <MonsterStatusSection>
