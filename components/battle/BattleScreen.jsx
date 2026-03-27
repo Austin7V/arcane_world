@@ -1,175 +1,181 @@
-import styled from "styled-components";
-import PlayerHand from "./zones/PlayerHand";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import PlayerHand from "./zones/PlayerHand";
 import MonsterDeck from "./zones/MonsterDeck";
 import PlayerDeck from "./zones/PlayerDeck";
 import BattleLog from "./panels/BattleLog";
-import BattleInfoPanel from "./panels/BattleInfoPanel";
-import resolvePlayerCardPlay from "@/lib/game/resolvers/resolvePlayerCardPlay";
-import resolveMonsterTurn from "@/lib/game/resolvers/resolveMonsterTurn";
-import getBattleResult from "@/lib/game/rules/getBattleResult";
 import BattleResultOverlay from "./panels/BattleResultOverlay";
-import createNextBattleState from "@/lib/game/state/createNextBattleState";
-import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
-import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
+import useBoardScale from "@/hooks/useBoardScale";
+import useBattleScreenLogic from "@/hooks/useBattleScreenLogic";
+import {
+  Wrapper,
+  SceneWrapper,
+  BoardScene,
+  MonsterPortraitSection,
+  MonsterStatusSection,
+  MonsterDeckSection,
+  BattleLogSection,
+  BattleInfoSection,
+  PlayerDeckSection,
+  PlayerCardsSection,
+  PlayerStatusSection,
+  PlayerPortraitSection,
+  FrameTitle,
+  InfoText,
+  EndTurnSection,
+  EndTurnButton,
+  MonsterPortraitImageWrapper,
+  MonsterPortraitImage,
+  EndTurnImageWrapper,
+  EndTurnImage,
+} from "./BattleScreen.styled";
+import BattleTableCards from "./panels/BattleTableCards";
+import Image from "next/image";
+import getMonsterPortraitImage from "@/lib/game/monsters/getMonsterPortraitImage";
+
+const BOARD_WIDTH = 1920;
+const BOARD_HEIGHT = 1080;
 
 export default function BattleScreen({ gameState, setGameState }) {
   const { data: session } = useSession();
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [battleLogMessages, setBattleLogMessages] = useState([]);
-  const previousBattleResultRef = useRef(null);
+  const boardScale = useBoardScale(BOARD_WIDTH, BOARD_HEIGHT);
+  const battleInfoRef = useRef(null);
 
-  function handleNextBattle() {
-    const nextBattleState = createNextBattleState(gameState);
-    setGameState(nextBattleState);
-  }
+  const [battleInfoRect, setBattleInfoRect] = useState(null);
+  const [isBattleDropActive, setIsBattleDropActive] = useState(false);
 
-  async function handleResetGame() {
-    try {
-      const requestBody = createUserSyncPayload(session?.user, {
-        activeGameState: null,
-      });
-
-      if (!requestBody) {
-        setGameState(null);
-        return;
-      }
-
-      if (battleResult === "defeat") {
-        requestBody.incrementLosses = true;
-        requestBody.currentStage = 1;
-      }
-
-      await syncUserToDatabase(requestBody);
-    } catch (error) {
-      console.error("Failed to reset saved game progress:", error);
-    }
-
-    setGameState(null);
-  }
-
-  function addBattleLogMessage(message) {
-    setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
-  }
-
-  async function saveVictoryProgress() {
-    try {
-      const requestBody = createUserSyncPayload(session?.user, {
-        incrementWins: true,
-        currentStage: gameState.victories + 2,
-      });
-
-      if (!requestBody) {
-        return;
-      }
-
-      await syncUserToDatabase(requestBody);
-    } catch (error) {
-      console.error("Failed to save victory progress:", error);
-    }
-  }
-
-  const playerHP = gameState.player.deck.length + gameState.player.hand.length;
-  const monsterHP = gameState.currentMonster.deck.length;
-  const battleResult = getBattleResult(gameState);
-  const isBasicGameGoalReached = gameState.victories >= 3;
+  const {
+    selectedCard,
+    battleLogMessages,
+    playerHP,
+    monsterHP,
+    battleResult,
+    isBasicGameGoalReached,
+    handleSelectCard,
+    handlePlayerCard,
+    handleEndTurn,
+    handleNextBattle,
+    handleResetGame,
+  } = useBattleScreenLogic({ gameState, setGameState, session });
 
   useEffect(() => {
-    if (
-      battleResult === "victory" &&
-      previousBattleResultRef.current !== "victory"
-    ) {
-      setGameState((previousGameState) => ({
-        ...previousGameState,
-        victories: previousGameState.victories + 1,
-      }));
-
-      saveVictoryProgress();
+    function updateBattleInfoRect() {
+      if (!battleInfoRef.current) return;
+      setBattleInfoRect(battleInfoRef.current.getBoundingClientRect());
     }
 
-    previousBattleResultRef.current = battleResult;
-  }, [battleResult, setGameState]);
+    updateBattleInfoRect();
+    window.addEventListener("resize", updateBattleInfoRect);
 
-  function handleSelectCard(card) {
-    setSelectedCard(card);
+    return () => {
+      window.removeEventListener("resize", updateBattleInfoRect);
+    };
+  }, [boardScale]);
+
+  function handleCardDrop(card) {
+    handlePlayerCard();
   }
-
-  function handlePlayerCard() {
-    if (battleResult) {
-      return;
-    }
-
-    const result = resolvePlayerCardPlay(gameState, selectedCard);
-
-    if (!result) {
-      return;
-    }
-
-    setGameState(result.nextGameState);
-    addBattleLogMessage(result.logMessage);
-    setSelectedCard(null);
-  }
-
-  function handleEndTurn() {
-    if (battleResult) {
-      return;
-    }
-
-    const result = resolveMonsterTurn(gameState);
-
-    if (!result) {
-      return;
-    }
-
-    setGameState(result.nextGameState);
-    addBattleLogMessage(result.logMessage);
-    setSelectedCard(null);
-  }
+  const monsterPortraitImage = getMonsterPortraitImage(
+    gameState.currentMonster.name
+  );
 
   return (
     <Wrapper>
-      <MonsterArea>
-        <SectionTitle>Monster</SectionTitle>
-        <InfoText>Name: {gameState.currentMonster.name}</InfoText>
-        <InfoText>HP: {monsterHP}</InfoText>
-        <MonsterDeck cards={gameState.currentMonster.deck} />
-      </MonsterArea>
+      <SceneWrapper style={{ transform: `scale(${boardScale})` }}>
+        <BoardScene>
+          <MonsterPortraitSection>
+            {monsterPortraitImage ? (
+              <MonsterPortraitImageWrapper>
+                <MonsterPortraitImage
+                  src={monsterPortraitImage}
+                  alt={gameState.currentMonster.name}
+                  fill
+                  sizes="600px"
+                  priority={false}
+                />
+              </MonsterPortraitImageWrapper>
+            ) : null}
+          </MonsterPortraitSection>
 
-      <CenterArea>
-        <BattleLog messages={battleLogMessages} />
-        <BattleInfoPanel
-          selectedCard={selectedCard}
-          currentTurn={gameState.currentTurn}
-          pendingMonsterEffect={gameState.pendingMonsterEffect}
-          battleResult={battleResult}
-          victories={gameState.victories}
-          isBasicGameGoalReached={isBasicGameGoalReached}
-          onPlayCard={handlePlayerCard}
-          onEndTurn={handleEndTurn}
-          isPlayCardDisabled={
-            !selectedCard ||
-            gameState.currentTurn !== "player" ||
-            battleResult !== null
-          }
-          isEndTurnDisabled={
-            gameState.currentTurn !== "player" || battleResult !== null
-          }
-        />
-      </CenterArea>
-      <PlayerArea>
-        <SectionTitle>Player</SectionTitle>
-        <InfoText>Name: {gameState.player.name}</InfoText>
-        <InfoText>Victories: {gameState.victories}</InfoText>
-        <InfoText>HP: {playerHP}</InfoText>
-        <InfoText>Armor: {gameState.player.armor}</InfoText>
-        <PlayerDeck cards={gameState.player.deck} />
-      </PlayerArea>
-      <PlayerHand
-        cards={gameState.player.hand}
-        onSelectCard={handleSelectCard}
-        selectedCard={selectedCard}
-      />
+          <MonsterStatusSection>
+            <FrameTitle>Monster Status</FrameTitle>
+            <InfoText>HP: {monsterHP}</InfoText>
+          </MonsterStatusSection>
+
+          <MonsterDeckSection>
+            <MonsterDeck cards={gameState.currentMonster.deck} />
+          </MonsterDeckSection>
+
+          <BattleLogSection>
+            <BattleLog messages={battleLogMessages} />
+          </BattleLogSection>
+
+          <BattleInfoSection
+            ref={battleInfoRef}
+            $isDropActive={isBattleDropActive}
+          >
+            <BattleTableCards
+              playedPlayerCardsOnTable={gameState.playedPlayerCardsOnTable}
+              playedMonsterCardOnTable={gameState.playedMonsterCardOnTable}
+              playedMonsterActionType={gameState.playedMonsterActionType}
+            />
+          </BattleInfoSection>
+          <EndTurnSection>
+            <EndTurnButton
+              type="button"
+              onClick={handleEndTurn}
+              disabled={
+                gameState.currentTurn !== "player" || battleResult !== null
+              }
+              aria-label="End Turn"
+            >
+              <EndTurnImageWrapper>
+                <EndTurnImage
+                  src="/ui/end_turn.png"
+                  alt="End Turn"
+                  fill
+                  sizes="160px"
+                  priority={false}
+                />
+              </EndTurnImageWrapper>
+            </EndTurnButton>
+          </EndTurnSection>
+
+          <PlayerDeckSection>
+            <PlayerDeck cards={gameState.player.deck} />
+          </PlayerDeckSection>
+
+          <PlayerCardsSection>
+            <PlayerHand
+              cards={gameState.player.hand}
+              onSelectCard={handleSelectCard}
+              selectedCard={selectedCard}
+              battleInfoRect={battleInfoRect}
+              onDropCard={handleCardDrop}
+              onDragOverBattleZone={setIsBattleDropActive}
+              canDrag={
+                gameState.currentTurn === "player" &&
+                battleResult === null &&
+                gameState.playedPlayerCardsOnTable.length < 4
+              }
+            />
+          </PlayerCardsSection>
+
+          <PlayerStatusSection>
+            <FrameTitle>Player Status</FrameTitle>
+            <InfoText>{gameState.player.name}</InfoText>
+            <InfoText>HP: {playerHP}</InfoText>
+            <InfoText>Armor: {gameState.player.armor}</InfoText>
+            <InfoText>Victories: {gameState.victories}</InfoText>
+          </PlayerStatusSection>
+
+          <PlayerPortraitSection>
+            <FrameTitle>Player</FrameTitle>
+            <InfoText>{gameState.player.name}</InfoText>
+          </PlayerPortraitSection>
+        </BoardScene>
+      </SceneWrapper>
+
       <BattleResultOverlay
         battleResult={battleResult}
         isBasicGameGoalReached={isBasicGameGoalReached}
@@ -179,50 +185,3 @@ export default function BattleScreen({ gameState, setGameState }) {
     </Wrapper>
   );
 }
-
-const Wrapper = styled.section`
-  min-height: 100vh;
-  display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  gap: 16px;
-  padding: 24px;
-`;
-
-const MonsterArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-`;
-
-const PlayerArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid white;
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-`;
-
-const SectionTitle = styled.h2`
-  margin: 0 0 8px;
-`;
-
-const InfoText = styled.p`
-  margin: 0;
-`;
-
-const CenterArea = styled.div`
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-  align-items: stretch;
-`;
