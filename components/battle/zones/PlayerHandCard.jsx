@@ -31,7 +31,7 @@ export default function PlayerHandCard({
           src={imageSrc}
           alt={card.name}
           fill
-          sizes="(max-width: 768px) 140px, 200px"
+          sizes="(max-width: 768px) 220px, 260px"
           priority={false}
         />
       </CardImageWrapper>
@@ -41,7 +41,7 @@ export default function PlayerHandCard({
 
 const CardWrapper = styled.button`
   position: relative;
-  width: 210px;
+  width: 220px;
   aspect-ratio: 2 / 3;
   padding: 0;
   border: none;

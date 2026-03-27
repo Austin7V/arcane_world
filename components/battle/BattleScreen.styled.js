@@ -152,40 +152,6 @@ export const InfoText = styled.p`
   line-height: 1.3;
 `;
 
-export const EndTurnSection = styled.section`
-  position: absolute;
-  right: 110px;
-  top: 470px;
-  z-index: 20;
-`;
-
-export const EndTurnButton = styled.button`
-  padding: 16px 28px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 14px;
-  background: rgba(12, 18, 30, 0.78);
-  color: #f3f6fb;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    background: rgba(22, 32, 52, 0.88);
-    box-shadow: 0 0 18px rgba(110, 200, 255, 0.22);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
-  }
-`;
-
 export const MonsterPortraitImageWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -195,4 +161,45 @@ export const MonsterPortraitImageWrapper = styled.div`
 export const MonsterPortraitImage = styled(Image)`
   object-fit: contain;
   user-select: none;
+`;
+
+export const EndTurnSection = styled.section`
+  position: absolute;
+  right: 85px;
+  top: 445px;
+  z-index: 20;
+`;
+
+export const EndTurnButton = styled.button`
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    filter 0.18s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.03);
+    filter: brightness(1.06);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    filter: grayscale(0.2);
+  }
+`;
+
+export const EndTurnImageWrapper = styled.div`
+  position: relative;
+  width: 170px;
+  height: 190px;
+`;
+
+export const EndTurnImage = styled(Image)`
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
 `;

@@ -26,6 +26,8 @@ import {
   EndTurnButton,
   MonsterPortraitImageWrapper,
   MonsterPortraitImage,
+  EndTurnImageWrapper,
+  EndTurnImage,
 } from "./BattleScreen.styled";
 import BattleTableCards from "./panels/BattleTableCards";
 import Image from "next/image";
@@ -120,12 +122,22 @@ export default function BattleScreen({ gameState, setGameState }) {
           </BattleInfoSection>
           <EndTurnSection>
             <EndTurnButton
+              type="button"
               onClick={handleEndTurn}
               disabled={
                 gameState.currentTurn !== "player" || battleResult !== null
               }
+              aria-label="End Turn"
             >
-              End Turn
+              <EndTurnImageWrapper>
+                <EndTurnImage
+                  src="/ui/end_turn.png"
+                  alt="End Turn"
+                  fill
+                  sizes="160px"
+                  priority={false}
+                />
+              </EndTurnImageWrapper>
             </EndTurnButton>
           </EndTurnSection>
 
