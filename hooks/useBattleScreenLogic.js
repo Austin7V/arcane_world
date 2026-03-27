@@ -20,8 +20,14 @@ export default function useBattleScreenLogic({
   const battleResult = getBattleResult(gameState);
   const isBasicGameGoalReached = gameState.victories >= 3;
 
-  function addBattleLogMessage(message) {
-    setBattleLogMessages((previousMessages) => [message, ...previousMessages]);
+  function addBattleLogMessage(logEntry) {
+    setBattleLogMessages((previousMessages) => [
+      {
+        id: `${Date.now()}-${Math.random()}`,
+        type: logEntry.type,
+      },
+      ...previousMessages,
+    ]);
   }
 
   function handleSelectCard(card) {
