@@ -13,43 +13,56 @@ export default function BattleTableCards({
   return (
     <TableCardsWrapper>
       {hasPlayerCards ? (
-        <PlayerCardsRow>
-          {playedPlayerCardsOnTable.map((card, index) => (
-            <PlayerCardSlot key={`${card.id}-${index}`} $index={index}>
-              <PlayedPlayerCardImageWrapper>
-                <PlayedPlayerCardImage
-                  src={getPlayerCardImage(card.id)}
-                  alt={card.name}
-                  fill
-                  sizes="200px"
-                  priority={false}
-                />
-              </PlayedPlayerCardImageWrapper>
-            </PlayerCardSlot>
-          ))}
-        </PlayerCardsRow>
+        <PlayerCardsSection cards={playedPlayerCardsOnTable} />
       ) : null}
 
       {!hasPlayerCards && playedMonsterCardOnTable ? (
-        <MonsterCardWrapper>
-          <MonsterPlayedCardImageWrapper>
-            <MonsterPlayedCardImage
-              src={getMonsterCardImage(playedMonsterCardOnTable.id)}
-              alt={playedMonsterCardOnTable.name}
+        <MonsterCardSection
+          card={playedMonsterCardOnTable}
+          actionType={playedMonsterActionType}
+        />
+      ) : null}
+    </TableCardsWrapper>
+  );
+}
+
+function PlayerCardsSection({ cards }) {
+  return (
+    <PlayerCardsRow>
+      {cards.map((card, index) => (
+        <PlayerCardSlot key={`${card.id}-${index}`}>
+          <CardImageWrapper>
+            <CardImage
+              src={getPlayerCardImage(card.id)}
+              alt={card.name}
               fill
               sizes="200px"
               priority={false}
             />
-            {playedMonsterActionType === "strike" ? (
-              <MonsterActionGlowTop />
-            ) : null}
-            {playedMonsterActionType === "bite" ? (
-              <MonsterActionGlowBottom />
-            ) : null}
-          </MonsterPlayedCardImageWrapper>
-        </MonsterCardWrapper>
-      ) : null}
-    </TableCardsWrapper>
+          </CardImageWrapper>
+        </PlayerCardSlot>
+      ))}
+    </PlayerCardsRow>
+  );
+}
+
+function MonsterCardSection({ card, actionType }) {
+  return (
+    <MonsterCardWrapper>
+      <CardImageWrapper>
+        <CardImage
+          src={getMonsterCardImage(card.id)}
+          alt={card.name}
+          fill
+          sizes="200px"
+          priority={false}
+        />
+        {actionType === "strike" && (
+          <MonsterActionGlow $top={80} $height={59} />
+        )}
+        {actionType === "bite" && <MonsterActionGlow $top={200} $height={70} />}
+      </CardImageWrapper>
+    </MonsterCardWrapper>
   );
 }
 
@@ -75,14 +88,14 @@ const PlayerCardSlot = styled.div`
   position: relative;
 `;
 
-const PlayedPlayerCardImageWrapper = styled.div`
+const CardImageWrapper = styled.div`
   position: relative;
   width: 200px;
   aspect-ratio: 2 / 3;
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
 `;
 
-const PlayedPlayerCardImage = styled(Image)`
+const CardImage = styled(Image)`
   object-fit: contain;
   user-select: none;
 `;
@@ -95,45 +108,13 @@ const MonsterCardWrapper = styled.div`
   transform-style: preserve-3d;
 `;
 
-const CardLabel = styled.p`
-  margin: 0 0 10px;
-  text-align: center;
-  font-size: 14px;
-  color: rgba(243, 246, 251, 0.82);
-`;
-
-const MonsterPlayedCardImageWrapper = styled.div`
-  position: relative;
-  width: 200px;
-  aspect-ratio: 2 / 3;
-  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
-`;
-
-const MonsterPlayedCardImage = styled(Image)`
-  object-fit: contain;
-  user-select: none;
-`;
-
-const MonsterActionGlowTop = styled.div`
+const MonsterActionGlow = styled.div`
   position: absolute;
-  top: 80px;
+  top: ${({ $top }) => $top}px;
   left: 19px;
   right: 19px;
-  height: 59px;
-  border-radius: 15px 15px 15px 15px;
-  pointer-events: none;
-  box-shadow:
-    inset 0 18px 34px rgba(255, 40, 40, 0.22),
-    0 0 16px rgba(255, 40, 40, 0.4);
-`;
-
-const MonsterActionGlowBottom = styled.div`
-  position: absolute;
-  top: 200px;
-  left: 19px;
-  right: 19px;
-  height: 70px;
-  border-radius: 15px 15px 15px 15px;
+  height: ${({ $height }) => $height}px;
+  border-radius: 15px;
   pointer-events: none;
   box-shadow:
     inset 0 18px 34px rgba(255, 40, 40, 0.22),

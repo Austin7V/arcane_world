@@ -46,12 +46,8 @@ const LogList = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
-  padding: 8px 4px;
-  perspective: 1000px;
-  transform: rotateY(0deg) rotateX(30deg) skewY(0deg);
-  transform-origin: center center;
+  padding-right: 4px;
 `;
 
 const LogItem = styled.div`
