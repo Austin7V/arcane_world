@@ -64,10 +64,13 @@ export const MonsterDeckSection = styled(BaseSection)`
 `;
 
 export const BattleLogSection = styled(PanelSection)`
-  left: 200px;
+  left: 250px;
   top: 260px;
-  width: 170px;
+  width: 80px;
   height: 450px;
+  perspective: 1000px;
+  transform: rotateY(18deg) rotateX(-26deg) skewY(0deg);
+  transform-origin: center center;
 `;
 
 export const BattleInfoSection = styled(BaseSection)`

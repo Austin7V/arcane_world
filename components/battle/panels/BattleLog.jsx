@@ -12,8 +12,6 @@ const battleLogIcons = {
 export default function BattleLog({ messages }) {
   return (
     <Wrapper>
-      <SectionTitle>Battle Log</SectionTitle>
-
       <LogList>
         {messages.map((message) => (
           <LogItem key={message.id}>
@@ -41,13 +39,6 @@ const Wrapper = styled.div`
   min-height: 0;
 `;
 
-const SectionTitle = styled.h3`
-  margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #f3f6fb;
-`;
-
 const LogList = styled.div`
   flex: 1;
   min-height: 0;
@@ -55,8 +46,12 @@ const LogList = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
-  padding-right: 4px;
+  padding: 8px 4px;
+  perspective: 1000px;
+  transform: rotateY(0deg) rotateX(30deg) skewY(0deg);
+  transform-origin: center center;
 `;
 
 const LogItem = styled.div`
