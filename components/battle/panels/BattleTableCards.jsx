@@ -95,13 +95,6 @@ const MonsterCardWrapper = styled.div`
   transform-style: preserve-3d;
 `;
 
-const CardLabel = styled.p`
-  margin: 0 0 10px;
-  text-align: center;
-  font-size: 14px;
-  color: rgba(243, 246, 251, 0.82);
-`;
-
 const MonsterPlayedCardImageWrapper = styled.div`
   position: relative;
   width: 200px;
