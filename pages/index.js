@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import StartScreen from "../components/StartScreen";
+import LeaderboardModal from "../components/LeaderboardModal";
 import createInitialGameState from "../lib/game/state/createInitialGameState";
 import createNextBattleState from "../lib/game/state/createNextBattleState";
 import createPersistedGameState from "../lib/game/state/createPersistedGameState";
@@ -9,26 +10,32 @@ import { useGame } from "../context/GameContext";
 import getBattleResult from "../lib/game/rules/getBattleResult";
 import createUserSyncPayload from "@/lib/users/createUserSyncPayload";
 import syncUserToDatabase from "@/lib/users/syncUserToDatabase";
+
 export default function HomePage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { gameState, setGameState } = useGame();
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   useEffect(() => {
     async function loadActiveGameState() {
       if (!session?.user?.email) {
         return;
       }
+
       if (gameState) {
         return;
       }
+
       try {
         const response = await fetch(
           `/api/users?googleId=${encodeURIComponent(session.user.email)}`
         );
+
         if (!response.ok) {
           return;
         }
+
         const data = await response.json();
 
         if (data.user?.activeGameState) {
@@ -52,8 +59,10 @@ export default function HomePage() {
     if (!session?.user?.email || !session?.user?.name) {
       return;
     }
+
     const newGameState = createInitialGameState(session.user.name);
     setGameState(newGameState);
+
     try {
       const requestBody = createUserSyncPayload(session.user, {
         activeGameState: createPersistedGameState(newGameState),
@@ -97,12 +106,28 @@ export default function HomePage() {
     router.push("/battle");
   }
 
+  function handleOpenLeaderboard() {
+    setIsLeaderboardOpen(true);
+  }
+
+  function handleCloseLeaderboard() {
+    setIsLeaderboardOpen(false);
+  }
+
   return (
-    <StartScreen
-      onStartGame={handleStartGame}
-      onContinueGame={handleContinueGame}
-      hasSavedGame={hasContinuableGame}
-      isAuthenticated={isAuthenticated}
-    />
+    <>
+      <StartScreen
+        onStartGame={handleStartGame}
+        onContinueGame={handleContinueGame}
+        onOpenLeaderboard={handleOpenLeaderboard}
+        hasSavedGame={hasContinuableGame}
+        isAuthenticated={isAuthenticated}
+      />
+
+      <LeaderboardModal
+        isOpen={isLeaderboardOpen}
+        onClose={handleCloseLeaderboard}
+      />
+    </>
   );
 }
