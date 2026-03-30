@@ -4,6 +4,7 @@ import AuthBlock from "./AuthBlock";
 export default function StartScreen({
   onStartGame,
   onContinueGame,
+  onOpenLeaderboard,
   hasSavedGame,
   isAuthenticated,
 }) {
@@ -16,14 +17,20 @@ export default function StartScreen({
       <MenuPanel>
         <AuthBlock />
         <Description>Start a new run.</Description>
+
         {hasSavedGame && (
           <StartButton onClick={onContinueGame} disabled={!isAuthenticated}>
             Continue
           </StartButton>
         )}
+
         <StartButton onClick={onStartGame} disabled={!isAuthenticated}>
           Start Game
         </StartButton>
+
+        <SecondaryButton onClick={onOpenLeaderboard} type="button">
+          Leaderboard
+        </SecondaryButton>
       </MenuPanel>
     </Wrapper>
   );
@@ -142,6 +149,15 @@ const Description = styled.p`
 `;
 
 const StartButton = styled.button`
+  padding: 14px 20px;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+`;
+
+const SecondaryButton = styled.button`
   padding: 14px 20px;
   font-size: 18px;
   font-weight: 700;
